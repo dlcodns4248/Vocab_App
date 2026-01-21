@@ -1,15 +1,30 @@
+# Android / Gradle
 *.iml
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
+
+# Local config
 local.properties
+/local.properties
+
+# IntelliJ / Android Studio
+.idea/
+!.idea/codeStyles/
+!.idea/runConfigurations/
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+hs_err_pid*
+replay_pid*
+
+# Archives (보통 필요 없음)
+*.zip
+*.tar.gz
+*.rar
