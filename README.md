@@ -1,2 +1,2 @@
-# Vocab_App
+# Voca_App
 A web application designed to help users memorize vocabulary efficiently
