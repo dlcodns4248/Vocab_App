@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "211185583428-0dfpvl15tepkmhkr4eeq6757h9487neh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vocaapp",
+            "certificate_hash": "5c89ad329716fae3a60721440b5bdcfa63d5ba81"
+          }
+        },
+        {
           "client_id": "211185583428-9ra10k5su8sos4ohpr2jdefoiioqe2f3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
