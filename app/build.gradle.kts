@@ -3,16 +3,14 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-android {
+android {  //이거 줄 왜 안없어짐>?
     namespace = "com.example.vocaapp"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36 //36 -> 34
 
     defaultConfig {
         applicationId = "com.example.vocaapp"
-        minSdk = 36
-        targetSdk = 36
+        minSdk = 26 //36 -> 26
+        targetSdk = 36  //36 -> 34
         versionCode = 1
         versionName = "1.0"
 
@@ -45,4 +43,10 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(platform("com.google.firebase:firebase-bom:34.8.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")  // fire base 인증
+    //implementation("com.google.android.gms:play-services-auth:21.0.0")  // 구글 로그인 화면 //구식이라 끔
+
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 }
