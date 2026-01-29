@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="15dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="단어" />
+
+        <EditText
+            android:id="@+id/wordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="(필수)" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="의미" />
+
+        <EditText
+            android:id="@+id/meanEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="(필수)" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="발음" />
+
+        <EditText
+            android:id="@+id/pronunciationEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="설명" />
+
+        <EditText
+            android:id="@+id/explainEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/wordRegisterButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="등록" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

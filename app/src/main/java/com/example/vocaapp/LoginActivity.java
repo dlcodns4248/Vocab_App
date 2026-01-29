@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -42,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         credentialManager = CredentialManager.create(this);
 
         // 2. 구글 로그인 버튼 연결
-        SignInButton googleBtn = findViewById(R.id.googleBtn);
+        Button googleBtn = findViewById(R.id.googleBtn);
         googleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

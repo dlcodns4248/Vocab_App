@@ -45,7 +45,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")  // fire base 인증
     //implementation("com.google.android.gms:play-services-auth:21.0.0")  // 구글 로그인 화면 //구식이라 끔
-
+    implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
