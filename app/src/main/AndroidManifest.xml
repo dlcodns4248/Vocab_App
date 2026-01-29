@@ -29,9 +29,9 @@
             android:name=".MainActivity"
             android:exported="false"/>
 
-        <activity
-            android:name=".VocabularyRegisterActivity"
+        <activity android:name=".VocabularyList.VocabularyActivity"
             android:exported="false"/>
+
     </application>
 
 </manifest>

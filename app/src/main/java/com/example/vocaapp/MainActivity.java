@@ -2,13 +2,10 @@ package com.example.vocaapp;
 
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.vocaapp.VocabularyBookList.VocabularyBookListFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,19 +20,19 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new VocabularyListFragment())
+                .replace(R.id.fragment_container, new VocabularyBookListFragment())
                 .commit();
 
         // 하단 네비게시연 선택에 따른 화면 이동
         bottomNavigationView.setOnItemSelectedListener(item -> {
 
             // 기본 화면을 단어장 화면으로
-            Fragment selectedFragment = new VocabularyListFragment();
+            Fragment selectedFragment = new VocabularyBookListFragment();
 
             int id = item.getItemId();
 
             if (id == R.id.vocabularylist) {
-                selectedFragment = new VocabularyListFragment();
+                selectedFragment = new VocabularyBookListFragment();
             } else if (id == R.id.quizandgame) {
                 selectedFragment = new QuizAndGameFragment();
             } else if (id == R.id.setting) {
