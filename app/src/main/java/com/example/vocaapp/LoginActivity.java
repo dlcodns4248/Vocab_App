@@ -1,4 +1,4 @@
-package com.example.vocaapp; // ★ 본인 패키지 이름이 맞는지 맨 윗줄 꼭 확인!
+package com.example.vocaapp; //  본인 패키지 이름이 맞는지 맨 윗줄 확인
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,11 +36,21 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
         // 1. 파이어베이스 및 신식 로그인 매니저 준비
         mAuth = FirebaseAuth.getInstance();
-        credentialManager = CredentialManager.create(this);
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            // 이미 로그인 된 유저의 경우 바로 메인화면 이동
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish(); // 뒤로가기 못하게 종료
+            return;   // 아래 코드 실행 안 함
+        }
+        setContentView(R.layout.activity_login); //로그인이 안된 경우 이 화면
+
+        credentialManager = CredentialManager.create(this);  // 나머지 연결 버튼 등
 
         // 2. 구글 로그인 버튼 연결
         Button googleBtn = findViewById(R.id.googleBtn);
@@ -95,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
         );
     }
 
-    // ★ 결과물(토큰) 꺼내는 함수
+    // 결과물(토큰) 꺼내는 함수
     private void handleSignIn(GetCredentialResponse result) {
         CustomCredential credential = (CustomCredential) result.getCredential();
 
@@ -117,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // ★ 파이어베이스에 신고하는 함수 (여기는 구식과 원리가 같음)
+    // 파이어베이스에 신고하는 함수 (여기는 구식과 원리가 같음)
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
