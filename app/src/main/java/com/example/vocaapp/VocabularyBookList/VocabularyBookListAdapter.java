@@ -46,7 +46,7 @@ public class VocabularyBookListAdapter extends RecyclerView.Adapter<VocabularyBo
     @Override
     public VocabularyListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_vocabulary_book, parent, false);
+                .inflate(R.layout.vocabulary_book_list_item, parent, false);
         return new VocabularyListViewHolder(view);
     }
 
