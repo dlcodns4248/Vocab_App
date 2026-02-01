@@ -14,11 +14,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.vocaapp.OnItemClickListener;
 import com.example.vocaapp.R;
 import com.example.vocaapp.VocabularyList.VocabularyActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -30,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VocabularyBookListFragment extends Fragment implements OnItemClickListener {
+public class VocabularyBookListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private VocabularyBookListAdapter adapter;
@@ -120,7 +118,8 @@ public class VocabularyBookListFragment extends Fragment implements OnItemClickL
         //recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new VocabularyBookListAdapter(dataList, this);
+        adapter = new VocabularyBookListAdapter(dataList, VocabularyBookListFragment.this);
+        //adapter = new VocabularyBookListAdapter(dataList, this);
         recyclerView.setAdapter(adapter);
 
         return view;

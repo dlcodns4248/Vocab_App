@@ -153,7 +153,7 @@ public class VocabularyActivity extends AppCompatActivity {
 
             // WordFirestore에서 실제로 데이터 삽입
             VocabularyFirestore.addWord(uid, vocabularyId, wordData, () -> {
-                Toast.makeText(this, "단어 등록 완료!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "단어 등록 완료!", Toast.LENGTH_SHORT).show();
                 wordEditText.setText("");
                 meanEditText.setText("");
                 pronunciationEditText.setText("");
