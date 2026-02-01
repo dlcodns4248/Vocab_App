@@ -6,6 +6,6 @@
     <solid android:color="@color/white"/>
 
     <!-- 코너 둥글기 -->
-    <corners android:radius="30dp"/>
+    <corners android:radius="15dp"/>
 
 </shape>
