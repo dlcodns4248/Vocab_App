@@ -38,7 +38,7 @@ public class SettingFragment extends Fragment {
         //로그인 한 유저 이메일 보여주기
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            tvUserEmail.setText("현재 계정: " + user.getEmail());
+            tvUserEmail.setText(user.getEmail());
         }
 
         //로그아웃 버튼 눌렀을 때 할 일
@@ -48,7 +48,7 @@ public class SettingFragment extends Fragment {
                 // 파이어베이스 로그아웃
                 mAuth.signOut();
 
-                Toast.makeText(getActivity(), "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
 
                 // 로그인 화면으로 이동
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
