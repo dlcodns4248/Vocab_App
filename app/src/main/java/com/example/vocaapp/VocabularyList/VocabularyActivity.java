@@ -1,5 +1,10 @@
 package com.example.vocaapp.VocabularyList;
 
+import android.graphics.Canvas;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import com.example.vocaapp.VocabularyList.SwipeController;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -36,6 +41,9 @@ public class VocabularyActivity extends AppCompatActivity {
     List<String> pronunciations = new ArrayList<>();
     List<String> comments = new ArrayList<>();
 
+    List<String> wordIds = new ArrayList<>(); // 삭제할 때 필요한 단어 ID 리스트
+    String uid; // uid를 전역에서 쓰기 위해 선언
+
     FirebaseFirestore db;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +72,7 @@ public class VocabularyActivity extends AppCompatActivity {
             return;
         }
 
-        String uid = user.getUid();
+        uid = user.getUid();   // 기존: String uid = user.getUid(); -> 수정: 전역 변수에 저장
 
         VocabularyFirestore.listenWords(uid, vocabularyId, new VocabularyFirestore.OnWordsChanged() {
             @Override
@@ -73,8 +81,11 @@ public class VocabularyActivity extends AppCompatActivity {
                 meanings.clear();
                 pronunciations.clear();
                 comments.clear();
+                wordIds.clear(); //  ID 리스트 초기화
 
                 for (DocumentSnapshot document : snapshots) {
+                    wordIds.add(document.getId());  // 문서의 ID(wordId) 가져오기
+
                     String word = document.getString("word");
                     String meaning = document.getString("mean");
                     String pronunciation = document.getString("pronunciation");
@@ -89,6 +100,7 @@ public class VocabularyActivity extends AppCompatActivity {
                 if (adapter == null) {
                     adapter = new VocabularyListAdapter(words, meanings, pronunciations, comments);
                     recyclerView.setAdapter(adapter);
+                    setupSwipeController(recyclerView); //  어댑터 연결 후 스와이프 기능 장착
                 } else {
                     adapter.notifyDataSetChanged();
                 }
@@ -162,6 +174,45 @@ public class VocabularyActivity extends AppCompatActivity {
                 Toast.makeText(this, "등록 실패", Toast.LENGTH_SHORT).show();
             });
 
+        });
+    }
+    private void setupSwipeController(RecyclerView recyclerView) {
+        SwipeController swipeController = new SwipeController(new SwipeController.SwipeControllerActions() {
+            @Override
+            public void onRightClicked(int position) {
+                // 1. 지울 단어의 ID 가져오기
+                String wordIdToDelete = wordIds.get(position);
+
+                // 2. Firestore에서 삭제 요청
+                VocabularyFirestore.deleteWord(uid, vocabularyId, wordIdToDelete, () -> {
+                    // 3. 성공 시 화면(리스트)에서도 즉시 삭제
+                    try {
+                        words.remove(position);
+                        meanings.remove(position);
+                        pronunciations.remove(position);
+                        comments.remove(position);
+                        wordIds.remove(position);
+
+                        adapter.notifyItemRemoved(position);
+                        adapter.notifyItemRangeChanged(position, words.size());
+
+                        Toast.makeText(VocabularyActivity.this, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    } catch (IndexOutOfBoundsException e) {
+                        // 동시에 여러 개 지우거나 리로딩 될 때 인덱스 에러 방지
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
         });
     }
 }

@@ -1,5 +1,6 @@
 package com.example.vocaapp.VocabularyList;
 
+import android.util.Log;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -38,6 +39,16 @@ public class VocabularyFirestore {
 
                     listener.onChanged(snapshots);
                 });
+    }
+    // 단어 삭제
+    public static void deleteWord(String uid, String vocabularyId, String wordId, Runnable onSuccess) {
+        FirebaseFirestore.getInstance() // 여기가 바뀌었습니다!
+                .collection("users").document(uid)
+                .collection("vocabularies").document(vocabularyId)
+                .collection("words").document(wordId)
+                .delete()
+                .addOnSuccessListener(aVoid -> onSuccess.run())
+                .addOnFailureListener(e -> Log.e("Firestore", "Error deleting word", e));
     }
 
     public interface OnWordsChanged {
