@@ -1,24 +1,15 @@
 package com.example.vocaapp.VocabularyList;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import androidx.annotation.NonNull;
-import androidx.camera.core.ImageCapture;
-import androidx.camera.view.PreviewView;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import com.example.vocaapp.VocabularyList.SwipeController;
 
-import android.graphics.Color;
+import com.example.vocaapp.Camera.CameraActivity;
+
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,8 +28,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.leinardi.android.speeddial.SpeedDialActionItem;
-import com.leinardi.android.speeddial.SpeedDialView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
