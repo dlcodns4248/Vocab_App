@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f3f4f5">
+    android:background="#f3f4f5"
+    android:backgroundTint="@color/md_theme_primary">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,18 +40,86 @@
                 android:layout_height="match_parent"
                 android:background="#f3f4f5" />
 
+            <!-- 메인 FAB -->
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/vocabularyBookRegisterImageView"
+                android:id="@+id/fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="50dp"
+                android:layout_marginEnd="50dp"
                 android:layout_marginBottom="100dp"
-                android:clickable="true"
-                android:contentDescription="registerButton"
+                android:importantForAccessibility="no"
+                android:src="@android:drawable/ic_input_add"
                 app:backgroundTint="@color/md_theme_primary"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:srcCompat="@android:drawable/ic_input_add" />
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- 옵션 1 라벨 -->
+            <TextView
+                android:id="@+id/fab_option1_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="110dp"
+                android:background="@drawable/label_background"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp"
+                android:text="Ai 단어 등록"
+                android:textColor="#000000"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/fab_option1"/>
+
+            <!-- 옵션 2 라벨 -->
+            <TextView
+                android:id="@+id/fab_option2_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="110dp"
+                android:background="@drawable/label_background"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp"
+                android:text="단어 등록"
+                android:textColor="#000000"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/fab_option2"/>
+
+            <!-- 서브 FAB 1 -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_option1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="50dp"
+                android:layout_marginBottom="100dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ai_icon"
+                android:visibility="gone"
+                app:backgroundTint="@color/white"
+                app:fabSize="mini"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:tint="@null" />
+
+            <!-- 서브 FAB 2 -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_option2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="50dp"
+                android:layout_marginBottom="100dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/plus_icon"
+                android:visibility="gone"
+                app:backgroundTint="@color/white"
+                app:fabSize="mini"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:tint="@null"/>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

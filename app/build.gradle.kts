@@ -51,4 +51,12 @@ dependencies {
 
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("com.google.android.material:material:1.11.0")
+    implementation("com.leinardi.android:speed-dial:3.3.0")
+
+    // 카메라 의존성
+    val camerax_version = "1.2.0"
+    implementation("androidx.camera:camera-core:${camerax_version}")
+    implementation("androidx.camera:camera-camera2:${camerax_version}")
+    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
+    implementation("androidx.camera:camera-view:${camerax_version}")
 }

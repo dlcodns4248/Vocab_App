@@ -1,16 +1,28 @@
 package com.example.vocaapp.VocabularyList;
 
+import android.app.Dialog;
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import androidx.annotation.NonNull;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.view.PreviewView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import com.example.vocaapp.VocabularyList.SwipeController;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +37,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +60,11 @@ public class VocabularyActivity extends AppCompatActivity {
 
     FirebaseFirestore db;
 
+    private FloatingActionButton fab, fabOption1, fabOption2;
+    private boolean isFabOpen = false;
+
+    private TextView fabOption1Label, fabOption2Label;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vocabulary_detail);
@@ -58,11 +77,42 @@ public class VocabularyActivity extends AppCompatActivity {
 
         vocabularyId = getIntent().getStringExtra("vocabularyId");
 
-        ImageView vocaRegisterImageView = findViewById(R.id.vocabularyBookRegisterImageView);
+        // FAB 초기화
+        fab = findViewById(R.id.fab);
+        fabOption1 = findViewById(R.id.fab_option1);
+        fabOption2 = findViewById(R.id.fab_option2);
+        fabOption1Label = findViewById(R.id.fab_option1_label);
+        fabOption2Label = findViewById(R.id.fab_option2_label);
 
-        // 단어 등록 창 띄우기
-        vocaRegisterImageView.setOnClickListener(v -> {
-            showWordRegisterBottomSheet();
+        // 메인 FAB 클릭 리스너
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isFabOpen) {
+                    closeFabMenu();
+                } else {
+                    openFabMenu();
+                }
+            }
+        });
+
+        // 옵션1 클릭 리스너
+        fabOption1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(VocabularyActivity.this, CameraActivity.class);
+                startActivity(intent);
+                closeFabMenu();
+            }
+        });
+
+        // 옵션2 클릭 리스너
+        fabOption2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showWordRegisterBottomSheet();
+                closeFabMenu();
+            }
         });
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
@@ -116,6 +166,39 @@ public class VocabularyActivity extends AppCompatActivity {
         // LayoutManager 설정
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
+
+    // FAB 메뉴 열기
+    private void openFabMenu() {
+        isFabOpen = true;
+        fabOption1.setVisibility(View.VISIBLE);
+        fabOption2.setVisibility(View.VISIBLE);
+        fabOption1Label.setVisibility(View.VISIBLE);
+        fabOption2Label.setVisibility(View.VISIBLE);
+
+        // 위로 펼치는 애니메이션
+        fabOption1.animate().translationY(-200f);
+        fabOption2.animate().translationY(-400f);
+        fabOption1Label.animate().translationY(-200f);
+        fabOption2Label.animate().translationY(-400f);
+        fab.animate().rotation(45f);
+    }
+
+    // FAB 메뉴 닫기
+    private void closeFabMenu() {
+        isFabOpen = false;
+
+        fabOption1.animate().translationY(0);
+        fabOption2.animate().translationY(0);
+        fabOption1Label.animate().translationY(0);
+        fabOption2Label.animate().translationY(0);
+        fab.animate().rotation(0f);
+
+        fabOption1.setVisibility(View.GONE);
+        fabOption2.setVisibility(View.GONE);
+        fabOption1Label.setVisibility(View.GONE);
+        fabOption2Label.setVisibility(View.GONE);
+    }
+
 
     private void showWordRegisterBottomSheet() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(VocabularyActivity.this);
