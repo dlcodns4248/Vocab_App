@@ -1,9 +1,10 @@
-package com.example.vocaapp.VocabularyList;
+package com.example.vocaapp.Camera;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -12,16 +13,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vocaapp.R;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class CameraActivity extends AppCompatActivity {
@@ -31,17 +38,25 @@ public class CameraActivity extends AppCompatActivity {
     private ImageCapture imageCapture;
     private ImageView captureImageView, backImageView;
 
+    private RecyclerView photoRecyclerView;
+    private PhotoAdapter photoAdapter;
+    private List<Bitmap> photoList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
+        // 사진 리스트 초기화
+        photoList = new ArrayList<>();
+
+        // RecyclerView 설정
+        photoRecyclerView = findViewById(R.id.photoRecyclerView);
+        photoAdapter = new PhotoAdapter(photoList);
+
         previewView = findViewById(R.id.previewView);
         captureImageView = findViewById(R.id.captureImageView);
         backImageView = findViewById(R.id.backImageView);
-
-
-
 
         // 권한 체크
         if (checkCameraPermission()) {
@@ -53,6 +68,17 @@ public class CameraActivity extends AppCompatActivity {
         captureImageView.setOnClickListener(v -> takePhoto());
 
         backImageView.setOnClickListener(v -> finish());
+
+        // LayoutManager 설정 (가로 스크롤)
+        LinearLayoutManager layoutManager = new LinearLayoutManager(
+                this,
+                LinearLayoutManager.HORIZONTAL,
+                false
+        );
+
+        photoRecyclerView.setLayoutManager(layoutManager);
+        photoRecyclerView.setAdapter(photoAdapter);
+
     }
 
     private boolean checkCameraPermission() {
@@ -130,33 +156,70 @@ public class CameraActivity extends AppCompatActivity {
             return;
         }
 
-        // 저장할 파일 생성
-        File photoFile = new File(
-                getExternalFilesDir(null),
-                System.currentTimeMillis() + ".jpg"
-        );
-
-        ImageCapture.OutputFileOptions outputFileOptions =
-                new ImageCapture.OutputFileOptions.Builder(photoFile).build();
-
-        // 사진 촬영
+        // 메모리에서 직접 이미지 캡처 (파일 저장 대신)
         imageCapture.takePicture(
-                outputFileOptions,
                 ContextCompat.getMainExecutor(this),
-                new ImageCapture.OnImageSavedCallback() {
+                new ImageCapture.OnImageCapturedCallback() {
                     @Override
-                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                        String msg = "사진 저장 완료: " + photoFile.getAbsolutePath();
-                        Toast.makeText(CameraActivity.this, msg, Toast.LENGTH_LONG).show();
+                    public void onCaptureSuccess(@NonNull ImageProxy image) {
+                        // ImageProxy를 Bitmap으로 변환
+                        Bitmap bitmap = imageProxyToBitmap(image);
+
+                        // RecyclerView에 사진 추가
+                        photoAdapter.addPhoto(bitmap);
+
+                        // 이미지 닫기
+                        image.close();
                     }
 
                     @Override
                     public void onError(@NonNull ImageCaptureException exception) {
                         Toast.makeText(CameraActivity.this,
-                                "사진 저장 실패: " + exception.getMessage(),
+                                "사진 촬영 실패: " + exception.getMessage(),
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
         );
+    }
+
+    // ImageProxy를 Bitmap으로 변환하는 메서드
+    private Bitmap imageProxyToBitmap(ImageProxy image) {
+        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+        byte[] bytes = new byte[buffer.remaining()];
+        buffer.get(bytes);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+        // 이미지 회전 정보 가져오기
+        int rotationDegrees = image.getImageInfo().getRotationDegrees();
+
+        // 회전된 Bitmap 반환
+        return rotateBitmap(bitmap, rotationDegrees);
+    }
+
+    // Bitmap을 회전시키는 메서드
+    private Bitmap rotateBitmap(Bitmap bitmap, int degrees) {
+        if (degrees == 0) {
+            return bitmap;
+        }
+
+        android.graphics.Matrix matrix = new android.graphics.Matrix();
+        matrix.postRotate(degrees);
+
+        Bitmap rotatedBitmap = Bitmap.createBitmap(
+                bitmap,
+                0,
+                0,
+                bitmap.getWidth(),
+                bitmap.getHeight(),
+                matrix,
+                true
+        );
+
+        // 원본 bitmap 메모리 해제
+        if (rotatedBitmap != bitmap) {
+            bitmap.recycle();
+        }
+
+        return rotatedBitmap;
     }
 }

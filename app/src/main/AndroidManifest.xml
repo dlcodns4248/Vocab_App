@@ -37,7 +37,7 @@
         <activity android:name=".VocabularyList.VocabularyActivity"
             android:exported="false"/>
 
-        <activity android:name=".VocabularyList.CameraActivity"
+        <activity android:name=".Camera.CameraActivity"
             android:exported="false"/>
 
     </application>
