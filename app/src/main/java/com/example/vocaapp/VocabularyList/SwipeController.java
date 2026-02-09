@@ -90,24 +90,29 @@ public class SwipeController extends ItemTouchHelper.Callback {
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
+                // [수정됨] 버튼 클릭 영역 판별 로직
                 if (buttonsActions != null && buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
                     float buttonLeft = viewHolder.itemView.getRight() - BUTTON_WIDTH;
                     float buttonRight = viewHolder.itemView.getRight();
                     float buttonTop = viewHolder.itemView.getTop();
                     float buttonBottom = viewHolder.itemView.getBottom();
 
-                    // 버튼 클릭 영역 확인
+                    // 삭제 버튼 영역을 터치했는지 확인
                     if (event.getX() >= buttonLeft && event.getX() <= buttonRight &&
                             event.getY() >= buttonTop && event.getY() <= buttonBottom) {
                         buttonsActions.onRightClicked(viewHolder.getAdapterPosition());
                     }
                 }
 
+                // 단어 몸통을 클릭했거나 동작이 끝나면, 뷰의 위치를 강제로 원상복구(0)
+                viewHolder.itemView.setTranslationX(0);
+
+                // 상태 초기화
                 buttonShowedState = ButtonsState.GONE;
                 currentItemViewHolder = null;
 
-
-                recyclerView.invalidate();
+                // [중요] 화면을 즉시 갱신하여 삭제 버튼이 잔상처럼 남지 않게 함
+                recyclerView.invalidate(); // 필요 시 adapter.notifyItemChanged(pos)를 고려할 수도 있음
 
                 setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                 setItemsClickable(recyclerView, true);

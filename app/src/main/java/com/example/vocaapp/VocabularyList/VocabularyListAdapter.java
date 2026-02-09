@@ -52,7 +52,10 @@ public class VocabularyListAdapter extends RecyclerView.Adapter<VocabularyListAd
 
     @Override
     public void onBindViewHolder(@NonNull WordViewHolder holder, int position) {
-        // 리스트에서 각각 꺼내서 TextView에 세팅
+
+        holder.itemView.setTranslationX(0f);  // [수정] 뷰가 재사용될 때, 기존에 밀려있던 위치를 0으로 강제 초기화
+
+        // 리스트에서 각각 꺼내서 TextView에 세팅 (기존 코드)
         holder.wordTextView.setText(words.get(position));
         holder.meanTextView.setText(meanings.get(position));
         holder.pronunciationTextView.setText(pronunciations.get(position));
@@ -63,4 +66,21 @@ public class VocabularyListAdapter extends RecyclerView.Adapter<VocabularyListAd
     public int getItemCount() {
         return words.size(); // 모든 리스트는 같은 길이여야 함
     }
+
+    public void removeItem(int position) {   //디버깅 추가(단어 삭제 헬퍼)
+        //1. 데이터 리스트에서 삭제
+        words.remove(position);
+        meanings.remove(position);
+        pronunciations.remove(position);
+        comments.remove(position);
+
+        //2. 삭제 애니메이션 실행
+        notifyItemRemoved(position);
+
+        //3. 번호표 다시 붙이기 (삭제된 위치부터 남은 개수만큼만 업데이트
+        if (position < words.size()) {
+            notifyItemRangeChanged(position, words.size() - position);
+        }
+    }
 }
+
