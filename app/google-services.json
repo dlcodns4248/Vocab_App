@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "211185583428-odes0mt5et4n261ibksv5faffqs5ef4g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vocaapp",
+            "certificate_hash": "e24a31f7b3c354a360847ce4becfae9a4f04fb3d"
+          }
+        },
+        {
           "client_id": "211185583428-b8jvrel36olutnuiakphpibrofcge2j6.apps.googleusercontent.com",
           "client_type": 3
         }
