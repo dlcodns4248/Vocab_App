@@ -71,7 +71,7 @@ public class VocabularyListAdapter extends RecyclerView.Adapter<VocabularyListAd
         words.remove(position);
         meanings.remove(position);
         pronunciations.remove(position);
-        comments.remove(position);
+        //comments.remove(position);
 
         //2. 삭제 애니메이션 실행
         notifyItemRemoved(position);
