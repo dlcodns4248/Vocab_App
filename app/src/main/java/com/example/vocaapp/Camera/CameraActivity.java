@@ -5,7 +5,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,12 +25,28 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vocaapp.R;
+import com.example.vocaapp.VocabularyList.VocabularyFirestore;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.ai.FirebaseAI;
+import com.google.firebase.ai.GenerativeModel;
+import com.google.firebase.ai.java.GenerativeModelFutures;
+import com.google.firebase.ai.type.Content;
+import com.google.firebase.ai.type.GenerateContentResponse;
+import com.google.firebase.ai.type.GenerationConfig;
+import com.google.firebase.ai.type.GenerativeBackend;
+import com.google.firebase.ai.type.Schema;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
+import com.google.gson.Gson;
 
-import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class CameraActivity extends AppCompatActivity {
@@ -39,8 +57,15 @@ public class CameraActivity extends AppCompatActivity {
     private ImageView captureImageView, backImageView;
 
     private RecyclerView photoRecyclerView;
-    private PhotoAdapter photoAdapter;
+    private CameraAdapter photoAdapter;
     private List<Bitmap> photoList;
+    private TextView finishTextView;
+
+    private GenerativeModelFutures model;
+
+    private String vocabularyId;
+    private String uid;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +77,22 @@ public class CameraActivity extends AppCompatActivity {
 
         // RecyclerView 설정
         photoRecyclerView = findViewById(R.id.photoRecyclerView);
-        photoAdapter = new PhotoAdapter(photoList);
+        photoAdapter = new CameraAdapter(photoList);
 
         previewView = findViewById(R.id.previewView);
         captureImageView = findViewById(R.id.captureImageView);
         backImageView = findViewById(R.id.backImageView);
+        finishTextView = findViewById(R.id.finishTextView);
+
+        vocabularyId = getIntent().getStringExtra("vocabularyId");
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null){
+            return;
+        }
+
+        uid = user.getUid();
 
         // 권한 체크
         if (checkCameraPermission()) {
@@ -79,6 +115,138 @@ public class CameraActivity extends AppCompatActivity {
         photoRecyclerView.setLayoutManager(layoutManager);
         photoRecyclerView.setAdapter(photoAdapter);
 
+        // 출력 schema 구조
+        Schema wordSchema = Schema.obj(
+                Map.of(
+                        "word", Schema.str("추출된 단어"),
+                        "meaning", Schema.str("단어의 뜻"),
+                        "pronunciation", Schema.str("단어의 발음을 한국어로")
+                ),
+                List.of("word", "meaning", "pronunciation") // 필수 필드 지정
+        );
+
+        Schema responseSchema = Schema.array(wordSchema, "추출된 단어 리스트");
+
+        // 2. GenerationConfig 설정
+        GenerationConfig.Builder configBuilder = new GenerationConfig.Builder();
+        configBuilder.responseMimeType = "application/json";
+        configBuilder.responseSchema = responseSchema;
+        GenerationConfig generationConfig = configBuilder.build();
+
+        // 3. 모델 초기화 (Vertex AI Backend 사용)
+        GenerativeModel ai = FirebaseAI.getInstance(GenerativeBackend.vertexAI("global"))
+                .generativeModel("gemini-2.5-flash", generationConfig);
+
+        model = GenerativeModelFutures.from(ai);
+
+        finishTextView.setOnClickListener(v -> extractData());
+
+    }
+
+    // 사진에서 단어를 추출하는 method
+    private void extractData() {
+        if (photoList.isEmpty()) {
+            Toast.makeText(this, "먼저 사진을 촬영해주세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 1. 분석 중임을 알리는 로딩 표시 (선택 사항)
+        Toast.makeText(this, "단어를 추출 중입니다...", Toast.LENGTH_SHORT).show();
+
+        Content.Builder contentBuilder = new Content.Builder();
+
+        // 2. photoList에 있는 모든 사진을 리사이징하여 추가
+        for (Bitmap photo : photoList) {
+            Bitmap resized = getResizedBitmap(photo, 1024);
+            contentBuilder.addImage(resized);
+        }
+
+        contentBuilder.addText("첨부된 모든 이미지들에서 중요한 단어들을 찾아내고, 각 단어의 한국어 뜻을 설명해줘.");
+
+        Content content = contentBuilder.build();
+
+        // Gemini 호출
+        ListenableFuture<GenerateContentResponse> response = model.generateContent(content);
+
+        // 콜백 설정 (executor 에러 해결을 위해 ContextCompat 사용)
+        Futures.addCallback(
+                response,
+                new FutureCallback<GenerateContentResponse>() {
+                    @Override
+                    public void onSuccess(GenerateContentResponse result) {
+                        String resultText = result.getText();
+                        Log.d("GeminiResult", "응답 JSON: " + resultText);
+
+                        try {
+                            // GSON을 사용하여 JSON 문자열을 List<WordItem>으로 변환
+                            Gson gson = new Gson();
+                            java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<ArrayList<WordItem>>(){}.getType();
+                            List<WordItem> wordList = gson.fromJson(resultText, listType);
+
+                            // 결과 처리 (메인 스레드에서 UI 업데이트)
+                            runOnUiThread(() -> {
+                                if (wordList != null && !wordList.isEmpty()) {
+                                    Toast.makeText(CameraActivity.this, "추출 완료: " + wordList.size() + "개 단어", Toast.LENGTH_SHORT).show();
+
+                                    Log.wtf("CHECK_ID", "현재 전달된 ID: " + (vocabularyId == null ? "NULL입니다!" : vocabularyId));
+
+                                    finish();
+
+                                    if (user != null && vocabularyId != null) {
+                                        String uid = user.getUid();
+                                        for (WordItem item : wordList) {
+                                            Map<String, Object> wordData = new HashMap<>();
+                                            wordData.put("word", item.word);
+                                            wordData.put("mean", item.meaning);
+                                            wordData.put("pronunciation", item.pronunciation);
+                                            wordData.put("timeStamp", FieldValue.serverTimestamp());
+
+
+                                            // 여기서 저장 호출
+                                            VocabularyFirestore.addWord(uid, vocabularyId, wordData,
+                                                    () -> Log.d("Firestore", "저장 성공: " + item.word),
+                                                    () -> Log.e("Firestore", "저장 실패: " + item.word)
+                                            );
+                                        }
+                                    } else {
+                                        // ID가 없어서 저장이 안 되는 상황이라면 이 로그가 찍힐 겁니다.
+                                        Log.e("FirestoreError", "UID 또는 VocabularyId가 없어 저장을 시작하지 못했습니다.");
+                                    }
+                                }
+                            });
+
+                        } catch (Exception e) {
+                            Log.e("ParsingError", "파싱 실패: " + e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        Log.e("GeminiError", "에러 발생: " + t.getMessage());
+                        runOnUiThread(() ->
+                                Toast.makeText(CameraActivity.this, "분석 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show()
+                        );
+                    }
+                },
+                ContextCompat.getMainExecutor(this) // 별도 변수 없이 안드로이드 메인 실행기 사용
+        );
+    }
+
+    private Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+
+        // 원본 비트맵의 비율을 유지하며 리사이징
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     private boolean checkCameraPermission() {
@@ -166,7 +334,7 @@ public class CameraActivity extends AppCompatActivity {
                         Bitmap bitmap = imageProxyToBitmap(image);
 
                         // RecyclerView에 사진 추가
-                        photoAdapter.addPhoto(bitmap);
+                        photoAdapter.addPhoto(bitmap, CameraActivity.this);
 
                         // 이미지 닫기
                         image.close();

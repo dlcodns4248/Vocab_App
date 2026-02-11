@@ -18,15 +18,15 @@ public class VocabularyListAdapter extends RecyclerView.Adapter<VocabularyListAd
     private List<String> words;
     private List<String> meanings;
     private List<String> pronunciations;
-    private List<String> comments;
+
 
     // 생성자
     public VocabularyListAdapter(List<String> words, List<String> meanings,
-                                 List<String> pronunciations, List<String> comments) {
+                                 List<String> pronunciations) {
         this.words = words;
         this.meanings = meanings;
         this.pronunciations = pronunciations;
-        this.comments = comments;
+
     }
 
     // ViewHolder 정의
@@ -38,7 +38,7 @@ public class VocabularyListAdapter extends RecyclerView.Adapter<VocabularyListAd
             wordTextView = itemView.findViewById(R.id.wordTextView);
             meanTextView = itemView.findViewById(R.id.meanTextView);
             pronunciationTextView = itemView.findViewById(R.id.pronunciationTextView);
-            commentTextView = itemView.findViewById(R.id.commentTextView);
+
         }
     }
 
@@ -58,8 +58,7 @@ public class VocabularyListAdapter extends RecyclerView.Adapter<VocabularyListAd
         // 리스트에서 각각 꺼내서 TextView에 세팅 (기존 코드)
         holder.wordTextView.setText(words.get(position));
         holder.meanTextView.setText(meanings.get(position));
-        holder.pronunciationTextView.setText(pronunciations.get(position));
-        holder.commentTextView.setText(comments.get(position));
+        holder.pronunciationTextView.setText("(" + pronunciations.get(position) + ")");
     }
 
     @Override

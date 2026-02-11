@@ -8,10 +8,27 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
-    <ImageView
-        android:id="@+id/photoImageView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/photoImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/deleteImageView"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="4dp"
+            android:background="@drawable/circle_background"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/cancel" />
+
+    </FrameLayout>
 
 </androidx.cardview.widget.CardView>
