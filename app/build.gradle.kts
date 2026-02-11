@@ -59,4 +59,14 @@ dependencies {
     implementation("androidx.camera:camera-camera2:${camerax_version}")
     implementation("androidx.camera:camera-lifecycle:${camerax_version}")
     implementation("androidx.camera:camera-view:${camerax_version}")
+
+
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+    implementation("com.google.firebase:firebase-ai")
+
+    // JSON 파싱을 위한 GSON
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // Guava (ListenableFuture 처리를 위해 필요)
+    implementation("com.google.guava:guava:31.1-android")
 }

@@ -49,9 +49,15 @@
                 android:layout_marginBottom="100dp"
                 android:importantForAccessibility="no"
                 android:src="@android:drawable/ic_input_add"
-                app:backgroundTint="@color/md_theme_primary"
+                app:backgroundTint="?attr/actionModeSplitBackground"
+                app:borderWidth="0dp"
+                app:elevation="0dp"
+                app:hoveredFocusedTranslationZ="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:pressedTranslationZ="0dp"
+                app:rippleColor="@android:color/transparent"
+                app:shapeAppearanceOverlay="@null" />
 
             <!-- 옵션 1 라벨 -->
             <TextView

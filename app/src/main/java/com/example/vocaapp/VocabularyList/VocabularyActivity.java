@@ -26,6 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -46,8 +47,6 @@ public class VocabularyActivity extends AppCompatActivity {
 
     List<String> wordIds = new ArrayList<>(); // 삭제할 때 필요한 단어 ID 리스트
     String uid; // uid를 전역에서 쓰기 위해 선언
-
-    FirebaseFirestore db;
 
     private FloatingActionButton fab, fabOption1, fabOption2;
     private boolean isFabOpen = false;
@@ -90,7 +89,9 @@ public class VocabularyActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(VocabularyActivity.this, CameraActivity.class);
+                intent.putExtra("vocabularyId", vocabularyId);
                 startActivity(intent);
+
                 closeFabMenu();
             }
         });
@@ -137,7 +138,7 @@ public class VocabularyActivity extends AppCompatActivity {
                 }
 
                 if (adapter == null) {
-                    adapter = new VocabularyListAdapter(words, meanings, pronunciations, comments);
+                    adapter = new VocabularyListAdapter(words, meanings, pronunciations);
                     recyclerView.setAdapter(adapter);
                     setupSwipeController(recyclerView); //  어댑터 연결 후 스와이프 기능 장착
                 } else {
@@ -201,7 +202,6 @@ public class VocabularyActivity extends AppCompatActivity {
         EditText wordEditText = view.findViewById(R.id.wordEditText);
         EditText meanEditText = view.findViewById(R.id.meanEditText);
         EditText pronunciationEditText = view.findViewById(R.id.pronunciationEditText);
-        EditText explainEditText = view.findViewById(R.id.explainEditText);
         Button wordRegisterButton = view.findViewById(R.id.wordRegisterButton);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -220,7 +220,6 @@ public class VocabularyActivity extends AppCompatActivity {
             String word = wordEditText.getText().toString().trim();
             String mean = meanEditText.getText().toString().trim();
             String pronunciation = pronunciationEditText.getText().toString().trim();
-            String explain = explainEditText.getText().toString().trim();
 
             // 유효성 검사
             if (word.isEmpty() || mean.isEmpty()) {
@@ -233,7 +232,7 @@ public class VocabularyActivity extends AppCompatActivity {
             wordData.put("word", word);
             wordData.put("mean", mean);
             wordData.put("pronunciation", pronunciation);
-            wordData.put("explain", explain);
+            wordData.put("timeStamp", FieldValue.serverTimestamp());
 
             // WordFirestore에서 실제로 데이터 삽입
             VocabularyFirestore.addWord(uid, vocabularyId, wordData, () -> {
@@ -241,7 +240,6 @@ public class VocabularyActivity extends AppCompatActivity {
                 wordEditText.setText("");
                 meanEditText.setText("");
                 pronunciationEditText.setText("");
-                explainEditText.setText("");
             }, () -> {
                 Toast.makeText(this, "등록 실패", Toast.LENGTH_SHORT).show();
             });
