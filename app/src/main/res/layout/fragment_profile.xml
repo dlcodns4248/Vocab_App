@@ -7,7 +7,7 @@
     android:background="#f3f4f5">
 
     <LinearLayout
-        android:id="@+id/contentLayout"
+        android:id="@+id/LinearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#f3f4f5"
@@ -21,23 +21,44 @@
             android:theme="?attr/actionBarTheme"
             app:title="프로필" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_margin="20dp"
-            android:background="@drawable/rounded_background"
-            android:orientation="vertical">
+            android:layout_height="100dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/rounded_background">
 
-            <TextView
-                android:id="@+id/tvUserEmail"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
-                android:gravity="center|start"
-                android:textColor="#555555"
-                android:textSize="16dp" />
+                android:orientation="horizontal">
 
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    app:srcCompat="@drawable/profile_icon" />
+
+                <TextView
+                    android:id="@+id/tvUserEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom|top"
+                    android:text="아이디 표시" />
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="30dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    app:srcCompat="@drawable/next_icon" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 

@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +25,7 @@ public class SettingFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         // 화면 가져옴
-        View view = inflater.inflate(R.layout.fragment_setting, container,false);
+        View view = inflater.inflate(R.layout.fragment_profile, container,false);
 
         // 파이어베이스 준비
         mAuth = FirebaseAuth.getInstance();
