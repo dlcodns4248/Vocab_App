@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +30,8 @@ public class SelectVocabularyBookBottomSheet extends BottomSheetDialogFragment {
     private WordbookAdapter adapter;
     private List<Map<String, Object>> dataList = new ArrayList<>();
     private String uid;
+    private ImageView cancelImageView;
+    private TextView registerTextView;
 
     @Nullable
     @Override
@@ -41,6 +46,31 @@ public class SelectVocabularyBookBottomSheet extends BottomSheetDialogFragment {
         // 1. RecyclerView 초기화
         recyclerView = view.findViewById(R.id.recyclerView); // XML에 선언한 ID
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        cancelImageView = view.findViewById(R.id.cancelImageView);
+        registerTextView = view.findViewById(R.id.registerTextView);
+
+        cancelImageView.setOnClickListener(v->{
+            dismiss();
+        });
+
+        registerTextView.setOnClickListener(v -> {
+            String selectedTitle = adapter.getSelectedTitle();
+
+            if (selectedTitle != null) {
+                // [핵심] 부모(QuizSetting)에게 데이터를 전달합니다.
+                Bundle result = new Bundle();
+                result.putString("selectedTitle", selectedTitle);
+
+                // requestKey는 부모와 맞춘 약속된 키입니다.
+                getParentFragmentManager().setFragmentResult("requestKey", result);
+
+                // 본인만 닫습니다. 그러면 아래에 있던 QuizSetting이 다시 보입니다.
+                dismiss();
+            } else {
+                Toast.makeText(getContext(), "단어장을 선택해주세요!", Toast.LENGTH_SHORT).show();
+            }
+
+        });
 
         adapter = new WordbookAdapter(dataList);
         recyclerView.setAdapter(adapter);
