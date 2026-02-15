@@ -1,5 +1,7 @@
-package com.example.vocaapp.VocabularyBookList;
+package com.example.vocaapp.QuizAndGame;
 
+import com.example.vocaapp.VocabularyBookList.VocabularyBookFirestore;
+import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -8,30 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VocabularyBookFirestore {
-    // 단어장 db에 추가하는 로직
-    public static void addVocabularyBook(Map<String, Object> inputVocabularyBookName, String uid, VocabularyBookCallback callback) {
+public class QuizAndGameFirestore {
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("users")
-                .document(uid)
-                .collection("vocabularies")
-                .add(inputVocabularyBookName)
-                .addOnSuccessListener(documentReference -> {
-                    if (callback != null) callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    if (callback != null) callback.onFailure(e);
-                });
-    }
-    // 성공, 실패 인터페이스
-    public interface VocabularyBookCallback {
-        void onSuccess();
-        void onFailure(Exception e);
-    }
-
-    // 단어장 불러오는 db 로직
+    // 단어장 제목과 단어 개수 불러오는 db 로직
     public static void listenVocabularies(String uid, VocabularyListCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -45,14 +26,17 @@ public class VocabularyBookFirestore {
                     }
 
                     if (querySnapshot != null) {
-                        List<Map<String, String>> dataList = new ArrayList<>();
+                        List<Map<String, Object>> dataList = new ArrayList<>();
 
                         for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                             String title = doc.getString("title");
+                            Long vocabularyCounts = doc.getLong("wordCount");
+
                             if (title != null) {
-                                Map<String, String> vocabData = new HashMap<>();
+                                Map<String, Object> vocabData = new HashMap<>();
                                 vocabData.put("id", doc.getId());
                                 vocabData.put("title", title);
+                                vocabData.put("wordCount", vocabularyCounts);
                                 dataList.add(vocabData);
                             }
                         }
@@ -63,7 +47,7 @@ public class VocabularyBookFirestore {
     }
     // 성공, 실패 인터페이스
     public interface VocabularyListCallback {
-        void onUpdate(List<Map<String, String>> dataList);
+        void onUpdate(List<Map<String, Object>> dataList);
         void onFailure(Exception e);
     }
 }
