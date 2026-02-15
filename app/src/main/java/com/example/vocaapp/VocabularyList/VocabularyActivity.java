@@ -271,13 +271,14 @@ public class VocabularyActivity extends AppCompatActivity {
                     adapter.removeItem(position); // 어댑터의 데이터 리스트 삭제 + 애니메이션 수행
                 }
 
-                // 3. DB 삭제 요청 (인자 개수 수정됨: 5개 -> 4개)
+                // 단어 삭제 요청
                 VocabularyFirestore.deleteWord(uid, vocabularyId, wordIdToDelete,
                         () -> {
-                            // 성공 시 메시지
+                            // 성공 시 처리
                             Toast.makeText(VocabularyActivity.this, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                        }
-
+                            // 필요하다면 여기서 리스트를 새로고침하는 로직을 추가하세요.
+                        },
+                        null // 실패 처리가 필요 없다면 null 전달
                 );
             }
         });

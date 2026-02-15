@@ -1,5 +1,6 @@
 package com.example.vocaapp;
 
+import com.example.vocaapp.QuizAndGame.QuizAndGameFragment;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
