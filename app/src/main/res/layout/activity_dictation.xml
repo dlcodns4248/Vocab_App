@@ -15,11 +15,13 @@
         android:theme="?attr/actionBarTheme" >
 
         <ImageView
+            android:id="@+id/cancelImageView"
             android:layout_width="30dp"
             android:layout_height="30dp"
             app:srcCompat="@drawable/cancel" />
 
         <TextView
+            android:id="@+id/currentPageTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
