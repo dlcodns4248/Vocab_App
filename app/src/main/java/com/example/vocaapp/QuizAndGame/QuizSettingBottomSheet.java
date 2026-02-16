@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,12 +52,14 @@ public class QuizSettingBottomSheet extends BottomSheetDialogFragment {
             selectdWordBookTextView.setText(mTitle);
         }
 
-        // [추가] 하위 BottomSheet로부터 결과를 받기 위한 리스너 설정
+        // 하위 BottomSheet로부터 결과를 받기 위한 리스너 설정
         getChildFragmentManager().setFragmentResultListener("requestKey", this, (requestKey, bundle) -> {
-            // 결과 번들에서 "selectedTitle" 키로 저장된 값을 가져옵니다.
+            // 번들에서 데이터를 꺼내기
             String selectedTitle = bundle.getString("selectedTitle");
+            String selectedDocId = bundle.getString("selectedId");
             if (selectedTitle != null) {
                 selectdWordBookTextView.setText(selectedTitle);
+                Toast.makeText(getContext(), "doc id는 " + selectedDocId, Toast.LENGTH_SHORT).show();
             }
         });
 

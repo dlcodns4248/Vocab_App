@@ -25,12 +25,12 @@ public class WordbookAdapter extends RecyclerView.Adapter<WordbookAdapter.Wordbo
         this.wordbookList = list;
     }
 
-    // [추가] 현재 선택된 아이템의 title을 가져오는 메서드
-    public String getSelectedTitle() {
+    // 현재 선택된 아이템의 title과 id를 가져오는 메서드
+    public Map<String, Object> getSelectedWordbook() {
         if (selectedPosition != -1 && selectedPosition < wordbookList.size()) {
-            return String.valueOf(wordbookList.get(selectedPosition).get("title"));
+            return wordbookList.get(selectedPosition);
         }
-        return null; // 선택된 게 없을 경우
+        return null;
     }
 
     // 1. 뷰홀더 생성: 아이템 레이아웃(XML)을 가져와서 뷰객체로 만듭니다.
@@ -58,7 +58,7 @@ public class WordbookAdapter extends RecyclerView.Adapter<WordbookAdapter.Wordbo
         // 1. 배경색 결정 로직 (둥근 모서리 유지)
         if (selectedPosition == position) {
             int color = ContextCompat.getColor(holder.itemView.getContext(), R.color.md_theme_primary);
-            holder.colorConstraintLayout.getBackground().setTint(color);
+            holder.colorConstraintLayout.getBackground().mutate().setTint(color);
         } else {
             // 선택되지 않은 항목은 기본 배경색(예: 흰색)으로 초기화
             holder.colorConstraintLayout.getBackground().setTint(Color.WHITE);

@@ -54,12 +54,16 @@ public class SelectVocabularyBookBottomSheet extends BottomSheetDialogFragment {
         });
 
         registerTextView.setOnClickListener(v -> {
-            String selectedTitle = adapter.getSelectedTitle();
+            Map<String, Object> selectedData = adapter.getSelectedWordbook();
 
-            if (selectedTitle != null) {
+            if (selectedData != null) {
+                // map에서 데이터 꺼내기
+                String title = String.valueOf(selectedData.get("title"));
+                String id = String.valueOf(selectedData.get("id"));
                 // [핵심] 부모(QuizSetting)에게 데이터를 전달합니다.
                 Bundle result = new Bundle();
-                result.putString("selectedTitle", selectedTitle);
+                result.putString("selectedTitle", title);
+                result.putString("selectedId", id);
 
                 // requestKey는 부모와 맞춘 약속된 키입니다.
                 getParentFragmentManager().setFragmentResult("requestKey", result);
