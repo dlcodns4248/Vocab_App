@@ -40,6 +40,13 @@
         <activity android:name=".Camera.CameraActivity"
             android:exported="false"/>
 
+        <activity android:name=".QuizAndGame.DictationActivity"
+            android:exported="false"/>
+
+        <activity android:name=".QuizAndGame.TestResultActivity"
+            android:exported="false"/>
+
+
     </application>
 
 </manifest>

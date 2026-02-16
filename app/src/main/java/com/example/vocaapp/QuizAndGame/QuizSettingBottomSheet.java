@@ -1,6 +1,8 @@
 package com.example.vocaapp.QuizAndGame;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,25 +19,23 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public class QuizSettingBottomSheet extends BottomSheetDialogFragment {
 
-    // [1번 추가] 전달받은 제목을 담을 변수
-    private String mTitle;
 
-    // [1번 추가] 메인 화면에서 이 메서드를 통해 제목을 넘겨주게 됩니다.
-    public static QuizSettingBottomSheet newInstance(String title) {
-        QuizSettingBottomSheet fragment = new QuizSettingBottomSheet();
-        Bundle args = new Bundle();
-        args.putString("selected_title", title);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private String selectedDocId;
+    private String selectedDocTitle;
+    private TextView selectdWordBookTextView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // [1번 추가] 시작하자마자 메인에서 보낸 "택배"가 있는지 확인하고 가져옵니다.
-        if (getArguments() != null) {
-            mTitle = getArguments().getString("selected_title");
-        }
+
+        getChildFragmentManager().setFragmentResultListener("requestKey", this, (requestKey, bundle) -> {
+            // 하위나 다른 곳에서 ID를 보내주면 변수에 저장
+            this.selectedDocId = bundle.getString("selectedId");
+            this.selectedDocTitle = bundle.getString("selectedTitle");
+
+            selectdWordBookTextView = getView().findViewById(R.id.selectedWordBookTextView);
+            selectdWordBookTextView.setText(selectedDocTitle);
+        });
     }
 
     @Nullable
@@ -45,27 +45,14 @@ public class QuizSettingBottomSheet extends BottomSheetDialogFragment {
 
         Button startButton = view.findViewById(R.id.button);
         LinearLayout selectLinearLayout = view.findViewById(R.id.selectLinearLayout);
-        TextView selectdWordBookTextView = view.findViewById(R.id.selectedWordBookTextView);
 
-        // [2번 추가] 처음 창이 열릴 때, 받아온 mTitle이 있다면 텍스트뷰에 바로 보여줍니다.
-        if (mTitle != null) {
-            selectdWordBookTextView.setText(mTitle);
-        }
-
-        // 하위 BottomSheet로부터 결과를 받기 위한 리스너 설정
-        getChildFragmentManager().setFragmentResultListener("requestKey", this, (requestKey, bundle) -> {
-            // 번들에서 데이터를 꺼내기
-            String selectedTitle = bundle.getString("selectedTitle");
-            String selectedDocId = bundle.getString("selectedId");
-            if (selectedTitle != null) {
-                selectdWordBookTextView.setText(selectedTitle);
-                Toast.makeText(getContext(), "doc id는 " + selectedDocId, Toast.LENGTH_SHORT).show();
-            }
-        });
-
+        // 시작 버튼을 누르면 처리
         startButton.setOnClickListener(v -> {
-            // "시작하기" 버튼 클릭 시 로직
-            dismiss(); // 시트 닫기
+            dismiss();
+            Log.e("abcabc", "현재 단어장 ID: " + selectedDocId);
+            Intent intent = new Intent(getContext(), DictationActivity.class);
+            intent.putExtra("vocabularyId", selectedDocId);
+            startActivity(intent);
         });
 
         selectLinearLayout.setOnClickListener(v -> {
