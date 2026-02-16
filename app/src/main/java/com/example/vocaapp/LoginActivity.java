@@ -133,10 +133,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // 최종 성공! 메인 화면으로 이동
-                        FirebaseUser user = mAuth.getCurrentUser();
                         runOnUiThread(() -> {
-                            Toast.makeText(LoginActivity.this, "환영합니다! " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
