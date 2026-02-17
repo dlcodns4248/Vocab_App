@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="right"
-            android:text="모든 단어" />
+            android:text="단어장 선택" />
 
         <ImageView
             android:id="@+id/imageView6"

@@ -43,8 +43,8 @@ public class SelectVocabularyBookBottomSheet extends BottomSheetDialogFragment {
             uid = user.getUid();
         }
 
-        // 1. RecyclerView 초기화
-        recyclerView = view.findViewById(R.id.recyclerView); // XML에 선언한 ID
+        // 초기화 및 레이아웃 연결
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         cancelImageView = view.findViewById(R.id.cancelImageView);
         registerTextView = view.findViewById(R.id.registerTextView);
@@ -56,20 +56,36 @@ public class SelectVocabularyBookBottomSheet extends BottomSheetDialogFragment {
         registerTextView.setOnClickListener(v -> {
             Map<String, Object> selectedData = adapter.getSelectedWordbook();
 
+
             if (selectedData != null) {
                 // map에서 데이터 꺼내기
                 String title = String.valueOf(selectedData.get("title"));
                 String id = String.valueOf(selectedData.get("id"));
-                // [핵심] 부모(QuizSetting)에게 데이터를 전달합니다.
-                Bundle result = new Bundle();
-                result.putString("selectedTitle", title);
-                result.putString("selectedId", id);
 
-                // requestKey는 부모와 맞춘 약속된 키입니다.
-                getParentFragmentManager().setFragmentResult("requestKey", result);
+                QuizAndGameFirestore quizAndGameFirestore = new QuizAndGameFirestore();
+                quizAndGameFirestore.getWordCount(uid, id, new QuizAndGameFirestore.OnWordCountCallback() {
+                        @Override
+                            public void onCallback(long wordCount) {
+                                // 단어장에 단어가 없는 경우를 처리
+                                if (wordCount == 0){
+                                    Toast.makeText(requireContext(), "단어장에 단어가 없습니다.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                // 단어장에 단어가 있는 경우를 처리
+                                else{
+                                    // [핵심] 부모(QuizSetting)에게 데이터를 전달합니다.
+                                    Bundle result = new Bundle();
+                                    result.putString("selectedTitle", title);
+                                    result.putString("selectedId", id);
 
-                // 본인만 닫습니다. 그러면 아래에 있던 QuizSetting이 다시 보입니다.
-                dismiss();
+                                    // requestKey는 부모와 맞춘 약속된 키입니다.
+                                    getParentFragmentManager().setFragmentResult("requestKey", result);
+
+                                    // 본인만 닫습니다. 그러면 아래에 있던 QuizSetting이 다시 보입니다.
+                                    dismiss();
+                                }
+                            }
+                });
             } else {
                 Toast.makeText(getContext(), "단어장을 선택해주세요!", Toast.LENGTH_SHORT).show();
             }

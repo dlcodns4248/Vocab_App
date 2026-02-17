@@ -33,6 +33,7 @@ public class QuizSettingBottomSheet extends BottomSheetDialogFragment {
             this.selectedDocId = bundle.getString("selectedId");
             this.selectedDocTitle = bundle.getString("selectedTitle");
 
+
             selectdWordBookTextView = getView().findViewById(R.id.selectedWordBookTextView);
             selectdWordBookTextView.setText(selectedDocTitle);
         });
@@ -48,6 +49,12 @@ public class QuizSettingBottomSheet extends BottomSheetDialogFragment {
 
         // 시작 버튼을 누르면 처리
         startButton.setOnClickListener(v -> {
+
+            if (selectedDocId == null){
+                Toast.makeText(getContext(), "단어장을 선택해주세요!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             dismiss();
             Log.e("abcabc", "현재 단어장 ID: " + selectedDocId);
             Intent intent = new Intent(getContext(), DictationActivity.class);
