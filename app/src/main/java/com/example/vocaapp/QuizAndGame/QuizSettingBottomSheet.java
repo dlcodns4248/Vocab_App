@@ -17,6 +17,8 @@ import androidx.annotation.Nullable;
 import com.example.vocaapp.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import com.example.vocaapp.QuizAndGame.VocabularyTestActivity;
+
 public class QuizSettingBottomSheet extends BottomSheetDialogFragment {
 
 
@@ -48,18 +50,40 @@ public class QuizSettingBottomSheet extends BottomSheetDialogFragment {
         LinearLayout selectLinearLayout = view.findViewById(R.id.selectLinearLayout);
 
         // 시작 버튼을 누르면 처리
-        startButton.setOnClickListener(v -> {
+        // 시작 버튼을 누르면 처리
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 1. 단어장 선택 여부 확인
+                if (selectedDocId == null){
+                    Toast.makeText(getContext(), "단어장을 선택해주세요!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-            if (selectedDocId == null){
-                Toast.makeText(getContext(), "단어장을 선택해주세요!", Toast.LENGTH_SHORT).show();
-                return;
+                dismiss(); // 팝업 닫기
+                Log.e("abcabc", "현재 단어장 ID: " + selectedDocId);
+
+                // 2. 프래그먼트에서 보낸 '쪽지(quizType)' 확인하기
+                // 어떤 버튼을 눌러서 이 팝업이 떴는지 확인하는 과정입니다.
+                String quizType = "DICTATION"; // 기본값은 받아쓰기
+                if (getArguments() != null) {
+                    quizType = getArguments().getString("quizType", "DICTATION");
+                }
+
+                // 3. 목적지(Intent) 결정하기
+                Intent intent;
+                if ("FLASHCARD".equals(quizType)) {
+                    // 플래시카드 버튼을 눌렀다면 O/X 테스트 화면으로!
+                    intent = new Intent(getContext(), VocabularyTestActivity.class);
+                } else {
+                    // 그 외(또는 받아쓰기 버튼)는 받아쓰기 화면으로!
+                    intent = new Intent(getContext(), DictationActivity.class);
+                }
+
+                // 4. 선택한 단어장 ID를 들고 출발!
+                intent.putExtra("vocabularyId", selectedDocId);
+                startActivity(intent);
             }
-
-            dismiss();
-            Log.e("abcabc", "현재 단어장 ID: " + selectedDocId);
-            Intent intent = new Intent(getContext(), DictationActivity.class);
-            intent.putExtra("vocabularyId", selectedDocId);
-            startActivity(intent);
         });
 
         selectLinearLayout.setOnClickListener(v -> {
