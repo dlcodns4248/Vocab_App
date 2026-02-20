@@ -17,8 +17,6 @@ import androidx.annotation.Nullable;
 import com.example.vocaapp.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import com.example.vocaapp.QuizAndGame.VocabularyTestActivity;
-
 public class QuizSettingBottomSheet extends BottomSheetDialogFragment {
 
 
@@ -74,7 +72,7 @@ public class QuizSettingBottomSheet extends BottomSheetDialogFragment {
                 Intent intent;
                 if ("FLASHCARD".equals(quizType)) {
                     // 플래시카드 버튼을 눌렀다면 O/X 테스트 화면으로!
-                    intent = new Intent(getContext(), VocabularyTestActivity.class);
+                    intent = new Intent(getContext(), OXTestActivity.class);
                 } else {
                     // 그 외(또는 받아쓰기 버튼)는 받아쓰기 화면으로!
                     intent = new Intent(getContext(), DictationActivity.class);
