@@ -121,10 +121,19 @@ public class DictationActivity extends AppCompatActivity {
                 updateUI(); // 다음 단어 보여주기
             } else {
                 Intent testResultIntent = new Intent(this, TestResultActivity.class);
-                testResultIntent.putExtra("pass", pass);
-                testResultIntent.putExtra("fail", fail);
-                startActivity(testResultIntent);
-                finish();
+
+                if (user != null) {
+                    testResultIntent.putExtra("pass", pass);
+                    testResultIntent.putExtra("fail", fail);
+
+                    testResultIntent.putExtra("vocabularyId", vocabularyId);
+                    testResultIntent.putExtra("userId", user.getUid());         //127,128 유저 id 단어장 id 넘기기
+
+                    startActivity(testResultIntent);
+                    finish();
+                } else {
+                    Toast.makeText(this, "로그인 정보가 없습니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

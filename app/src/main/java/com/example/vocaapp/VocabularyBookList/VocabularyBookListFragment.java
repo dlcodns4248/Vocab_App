@@ -32,9 +32,9 @@ public class VocabularyBookListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private VocabularyBookListAdapter adapter;
-    private final ArrayList<Map<String, String>> dataList = new ArrayList<>();
+    // String을 Object로 변경 (숫자 데이터를 받기 위함)
+    private final ArrayList<Map<String, Object>> dataList = new ArrayList<>();
     private String uid;
-
 
     @Nullable
     @Override
@@ -45,33 +45,23 @@ public class VocabularyBookListFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerViewVocabulary);
 
-        // 현재 로그인한 사용자의 uid를 가져오는 처리
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             uid = user.getUid();
         }
 
-        // 단어장 이름을 등록하는 bottomsheet를 띄우는 처리
         ImageView vocabularyBookRegisterImageView = view.findViewById(R.id.vocabularyBookRegisterImageView);
         vocabularyBookRegisterImageView.setOnClickListener(v -> {
-
             BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext());
-
-            View view2 = getLayoutInflater()
-                    .inflate(R.layout.vocabulary_book_bottom_sheet, null);
-
+            View view2 = getLayoutInflater().inflate(R.layout.vocabulary_book_bottom_sheet, null);
             bottomSheetDialog.setContentView(view2);
             bottomSheetDialog.show();
 
             Button registerButton = view2.findViewById(R.id.registerButton);
             EditText bookNameEditText = view2.findViewById(R.id.bookNameEditText);
 
-
             registerButton.setOnClickListener( v2 -> {
-
                 String bookName = bookNameEditText.getText().toString();
-
-                // 단어장 이름 입력 안하면 처리
                 if (bookName.isEmpty()){
                     Toast.makeText(getContext(), "단어장 이름을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
@@ -79,6 +69,8 @@ public class VocabularyBookListFragment extends Fragment {
 
                 Map<String, Object> inputVocabularyBookName = new HashMap<>();
                 inputVocabularyBookName.put("title", bookName);
+                // 새 단어장 만들 때 스탬프 0개로 초기화
+                inputVocabularyBookName.put("stampCount", 0);
 
                 VocabularyBookFirestore.addVocabularyBook(inputVocabularyBookName, uid, new VocabularyBookFirestore.VocabularyBookCallback() {
                     @Override
@@ -91,18 +83,15 @@ public class VocabularyBookListFragment extends Fragment {
                     }
                 });
             });
-
         });
 
-        // 단어장들 불러오기 처리
+        // Firestore 데이터 로드 부분의 타입을 Object로 변경
         VocabularyBookFirestore.listenVocabularies(uid, new VocabularyBookFirestore.VocabularyListCallback() {
             @Override
-            public void onUpdate(List<Map<String, String>> dataList) {
-                // 기존 데이터 갱신
-                VocabularyBookListFragment.this.dataList.clear();
-                VocabularyBookListFragment.this.dataList.addAll(dataList);
+            public void onUpdate(List<Map<String, Object>> newDataList) {
+                dataList.clear();
+                dataList.addAll(newDataList);
 
-                // Adapter 갱신
                 if (adapter != null) {
                     adapter.notifyDataSetChanged();
                 }
@@ -114,25 +103,20 @@ public class VocabularyBookListFragment extends Fragment {
             }
         });
 
-
-        //recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         adapter = new VocabularyBookListAdapter(dataList, VocabularyBookListFragment.this);
-        //adapter = new VocabularyBookListAdapter(dataList, this);
         recyclerView.setAdapter(adapter);
 
         return view;
     }
 
-    // recyclerview item 클릭 후 상세 페이지 이동 처리
     public void onItemClick(int position) {
-        Map<String, String> selectedVocabulary = dataList.get(position);
-        String selectedVocabularyId = selectedVocabulary.get("id");
+        Map<String, Object> selectedVocabulary = dataList.get(position);
+        //  ID 꺼낼 때 String으로 변환
+        String selectedVocabularyId = String.valueOf(selectedVocabulary.get("id"));
 
         Intent intent = new Intent(requireContext(), VocabularyActivity.class);
         intent.putExtra("vocabularyId", selectedVocabularyId);
         startActivity(intent);
     }
-
 }
