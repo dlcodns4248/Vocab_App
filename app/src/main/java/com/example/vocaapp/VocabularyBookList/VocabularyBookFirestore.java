@@ -2,6 +2,7 @@ package com.example.vocaapp.VocabularyBookList;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,13 +26,14 @@ public class VocabularyBookFirestore {
                     if (callback != null) callback.onFailure(e);
                 });
     }
+
     // 성공, 실패 인터페이스
     public interface VocabularyBookCallback {
         void onSuccess();
         void onFailure(Exception e);
     }
 
-    // 단어장 불러오는 db 로직
+    // [중요 수정] 단어장 불러오는 db 로직
     public static void listenVocabularies(String uid, VocabularyListCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -45,25 +47,27 @@ public class VocabularyBookFirestore {
                     }
 
                     if (querySnapshot != null) {
-                        List<Map<String, String>> dataList = new ArrayList<>();
+                        // [수정] String 대신 Object를 사용하여 모든 타입의 데이터를 담습니다.
+                        List<Map<String, Object>> dataList = new ArrayList<>();
 
-                        for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                            String title = doc.getString("title");
-                            if (title != null) {
-                                Map<String, String> vocabData = new HashMap<>();
-                                vocabData.put("id", doc.getId());
-                                vocabData.put("title", title);
-                                dataList.add(vocabData);
-                            }
+                        for (QueryDocumentSnapshot doc : querySnapshot) {
+                            // [수정] doc.getData()를 쓰면 title, stampCount 등 모든 필드를 한 번에 가져옵니다.
+                            Map<String, Object> vocabData = doc.getData();
+                            // ID 값도 나중에 필요하므로 함께 넣어줍니다.
+                            vocabData.put("id", doc.getId());
+
+                            dataList.add(vocabData);
                         }
 
                         if (callback != null) callback.onUpdate(dataList);
                     }
                 });
     }
-    // 성공, 실패 인터페이스
+
+    // [중요 수정] 인터페이스 타입 변경
     public interface VocabularyListCallback {
-        void onUpdate(List<Map<String, String>> dataList);
+        // [수정] 여기도 List<Map<String, Object>>로 변경하여 숫자 데이터를 허용합니다.
+        void onUpdate(List<Map<String, Object>> dataList);
         void onFailure(Exception e);
     }
 }
