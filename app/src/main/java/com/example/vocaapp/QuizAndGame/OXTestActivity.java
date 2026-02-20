@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-// [변경] 클래스 이름을 OXTestActivity로 변경
 public class OXTestActivity extends AppCompatActivity {
 
     private TextView vocabularyTextView;
@@ -31,7 +30,7 @@ public class OXTestActivity extends AppCompatActivity {
     private int currentIndex = 0;
     private int correctCount = 0;
     private String vocabularyId;
-    private String userId; // [추가] 유저 ID 저장을 위한 변수
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +41,29 @@ public class OXTestActivity extends AppCompatActivity {
         // 1. 인텐트로 넘어온 단어장 ID 받기
         vocabularyId = getIntent().getStringExtra("vocabularyId");
 
-        // 2. XML 뷰 연결
+        // xml 뷰 연결
         vocabularyTextView = findViewById(R.id.vocabularyTextView);
-        failImageView = findViewById(R.id.failImageView);   // X 버튼
-        passImageView = findViewById(R.id.passImageView);   // O 버튼
+        failImageView = findViewById(R.id.failImageView);
+        passImageView = findViewById(R.id.passImageView);
 
-        // 3. 파이어베이스에서 단어 가져오기
-        loadWordsFromFirestore();
+        // 현재 로그인한 사용자의 id 가져오기
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            userId = user.getUid();
+        }
+
+        QuizAndGameFirestore quizAndGameFirestore = new QuizAndGameFirestore();
+        quizAndGameFirestore.loadWordsFromFirestore(userId, vocabularyId, wordList, new QuizAndGameFirestore.loadWordsFromFirestoreCallback(){
+            @Override
+            public void onCallback(List<Map<String, Object>> wordList) {
+                if (wordList.size() > 0) {
+                    displayWord();
+                } else {
+                    Toast.makeText(OXTestActivity.this, "단어장에 단어가 없습니다.", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+        });
 
         // 4. X 버튼 클릭 리스너 (모르는 단어)
         failImageView.setOnClickListener(v -> moveToNextWord());
@@ -58,42 +73,6 @@ public class OXTestActivity extends AppCompatActivity {
             correctCount++; // 맞은 개수 증가
             moveToNextWord();
         });
-    }
-
-    private void loadWordsFromFirestore() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user == null) {
-            Toast.makeText(this, "로그인 정보가 없습니다.", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        userId = user.getUid(); // [추가] 유저 ID 저장
-
-        db.collection("users")
-                .document(userId)
-                .collection("vocabularies")
-                .document(vocabularyId)
-                .collection("words")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    wordList.clear();
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        wordList.add(doc.getData());
-                    }
-
-                    if (wordList.size() > 0) {
-                        displayWord();
-                    } else {
-                        Toast.makeText(OXTestActivity.this, "단어장에 단어가 없습니다.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("OXTest", "Firestore 연결 에러", e);
-                });
     }
 
     private void displayWord() {
@@ -126,6 +105,6 @@ public class OXTestActivity extends AppCompatActivity {
         intent.putExtra("vocabularyId", vocabularyId);
 
         startActivity(intent);
-        finish(); // 현재 퀴즈 화면은 종료
+        finish();
     }
 }

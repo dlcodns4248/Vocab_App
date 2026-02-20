@@ -48,8 +48,6 @@ public class DictationActivity extends AppCompatActivity {
         wordEditText = findViewById(R.id.wordEditText);
         totalPageTextView = findViewById(R.id.totalPageTextView);
 
-
-
         // 유저 정보 가져오기
         String userId = user.getUid();
 

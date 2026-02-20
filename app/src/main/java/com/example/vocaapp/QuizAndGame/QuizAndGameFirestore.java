@@ -1,8 +1,11 @@
 package com.example.vocaapp.QuizAndGame;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.vocaapp.VocabularyBookList.VocabularyBookFirestore;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -105,5 +108,34 @@ public class QuizAndGameFirestore {
     }
     public interface OnWordsLoadedCallback {
         void onCallback(List<Map<String, Object>> words);
+    }
+
+    public void loadWordsFromFirestore(String userId, String vocabularyId, List<Map<String, Object>> wordList, loadWordsFromFirestoreCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        userId = user.getUid(); // [추가] 유저 ID 저장
+
+        db.collection("users")
+                .document(userId)
+                .collection("vocabularies")
+                .document(vocabularyId)
+                .collection("words")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    wordList.clear();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        wordList.add(doc.getData());
+                    }
+                    callback.onCallback(wordList);
+
+
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("OXTest", "Firestore 연결 에러", e);
+                });
+    }
+    public interface loadWordsFromFirestoreCallback {
+        void onCallback(List<Map<String, Object>> wordList);
     }
 }
