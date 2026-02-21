@@ -31,15 +31,14 @@ public class OXTestActivity extends AppCompatActivity {
     private int correctCount = 0;
     private String vocabularyId;
     private String userId;
-    // 현재 페이지 수를 표시하기 위한 변수
-    private int currentPage = 1;
+    int currentPage = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ox_test);
 
-        // 1. 인텐트로 넘어온 단어장 ID 받기
+        // 인텐트로 전달받은 vocabularyId 가져오기
         vocabularyId = getIntent().getStringExtra("vocabularyId");
 
         // 뷰 연결
@@ -47,14 +46,11 @@ public class OXTestActivity extends AppCompatActivity {
         failImageView = findViewById(R.id.failImageView);
         passImageView = findViewById(R.id.passImageView);
         ImageView cancelImageView = findViewById(R.id.cancelImageView);
-        TextView currentPageTextView = findViewById(R.id.currentPageTextView);
         TextView totalPageTextView = findViewById(R.id.totalPageTextView);
 
         cancelImageView.setOnClickListener(v -> finish());
 
         QuizAndGameFirestore quizAndGameFirestore = new QuizAndGameFirestore();
-
-        currentPageTextView.setText(currentPage);
 
         // 현재 로그인한 사용자의 id 가져오기
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -89,19 +85,24 @@ public class OXTestActivity extends AppCompatActivity {
 
         });
 
-
         // O 버튼 클릭 리스너 (아는 단어)
         passImageView.setOnClickListener(v -> {
             correctCount++;
             currentPage ++;
             moveToNextWord();
         });
+
     }
 
     private void displayWord() {
         if (currentIndex < wordList.size()) {
             String word = (String) wordList.get(currentIndex).get("word");
             vocabularyTextView.setText(word);
+
+            TextView currentPageTextView = findViewById(R.id.currentPageTextView);
+            if (currentPageTextView != null) {
+                currentPageTextView.setText(String.valueOf(currentPage));
+            }
         } else {
             // 모든 단어를 다 본 경우 결과 화면으로 이동
             showFinalResult();
@@ -113,15 +114,13 @@ public class OXTestActivity extends AppCompatActivity {
         displayWord();
     }
 
-    // [중요 수정] 이제 다이얼로그 대신 TestResultActivity로 데이터를 보냅니다.
+    // testResultActivity로 데이터 넘기기
     private void showFinalResult() {
         int pass = correctCount;
         int fail = wordList.size() - correctCount;
 
-        // TestResultActivity로 전환하기 위한 인텐트 생성
         Intent intent = new Intent(OXTestActivity.this, TestResultActivity.class);
 
-        // TestResultActivity에서 요구하는 키값들 그대로 넣어주기
         intent.putExtra("pass", pass);
         intent.putExtra("fail", fail);
         intent.putExtra("userId", userId);
