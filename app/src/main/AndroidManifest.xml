@@ -46,7 +46,11 @@
         <activity android:name=".QuizAndGame.TestResultActivity"
             android:exported="false"/>
 
-        <activity android:name=".QuizAndGame.OXTestActivity" />
+        <activity android:name=".QuizAndGame.OXTestActivity"
+            android:exported="false"/>
+
+        <activity android:name=".QuizAndGame.MultipleChoiceActivity"
+            android:exported="false"/>
 
 
     </application>

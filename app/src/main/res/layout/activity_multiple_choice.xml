@@ -68,7 +68,7 @@
             android:id="@+id/wordTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="뜻 표시"
+            android:text="단어"
             android:textSize="30dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -79,34 +79,73 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/wordEditText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/rounded_background"
-            android:hint="단어의 철자를 입력하세요."
-            android:singleLine="true" />
+        android:orientation="vertical" >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/nextConstraintLayout"
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:background="@drawable/circle_background">
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_background">
 
             <TextView
-                android:id="@+id/textView10"
+                android:id="@+id/firstTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="다음"
-                android:textColor="#ffffff"
+                android:text="뜻1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rounded_background">
+
+            <TextView
+                android:id="@+id/secondTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="뜻2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rounded_background">
+
+            <TextView
+                android:id="@+id/thirdTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="뜻3"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rounded_background">
+
+            <TextView
+                android:id="@+id/forthTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="뜻4"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

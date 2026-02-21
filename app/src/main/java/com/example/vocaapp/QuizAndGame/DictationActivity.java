@@ -2,7 +2,6 @@ package com.example.vocaapp.QuizAndGame;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,7 +42,7 @@ public class DictationActivity extends AppCompatActivity {
         // 데이터 연결
         cancelImageView = findViewById(R.id.cancelImageView);
         currentPageTextView = findViewById(R.id.currentPageTextView);
-        displayedMeanTextView = findViewById(R.id.displayedMeanTextView);
+        displayedMeanTextView = findViewById(R.id.wordTextView);
         nextConstraintLayout = findViewById(R.id.nextConstraintLayout);
         wordEditText = findViewById(R.id.wordEditText);
         totalPageTextView = findViewById(R.id.totalPageTextView);

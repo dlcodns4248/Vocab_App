@@ -15,7 +15,9 @@ import com.example.vocaapp.R;
 public class QuizAndGameFragment extends Fragment {
 
     ConstraintLayout dictationConstraintLayout;
-    ConstraintLayout flashcardConstraintLayout; // 추가된 플래시카드 버튼
+    ConstraintLayout flashcardConstraintLayout;
+    ConstraintLayout multiplechoiceConstraintLayout;
+
 
     @Nullable
     @Override
@@ -26,6 +28,8 @@ public class QuizAndGameFragment extends Fragment {
 
         dictationConstraintLayout = view.findViewById(R.id.dictationConstraintLayout);
         flashcardConstraintLayout = view.findViewById(R.id.flashcardConstraintLayout);
+        multiplechoiceConstraintLayout = view.findViewById(R.id.multiplechoiceConstraintLayout);
+
 
         //  받아쓰기 버튼
         dictationConstraintLayout.setOnClickListener(new View.OnClickListener() {
@@ -34,8 +38,7 @@ public class QuizAndGameFragment extends Fragment {
                 QuizSettingBottomSheet bottomSheet = new QuizSettingBottomSheet();
                 Bundle args = new Bundle();
                 args.putString("quizType", "DICTATION");
-                bottomSheet.setArguments(args);             //34,35,36 추가(게임이(목적지가) 여러개이기 때문에
-
+                bottomSheet.setArguments(args);
                 bottomSheet.show(getChildFragmentManager(), "QuizSettingTag");
             }
         });
@@ -47,6 +50,18 @@ public class QuizAndGameFragment extends Fragment {
                 QuizSettingBottomSheet bottomSheet = new QuizSettingBottomSheet();
                 Bundle args = new Bundle();
                 args.putString("quizType", "FLASHCARD");
+                bottomSheet.setArguments(args);
+                bottomSheet.show(getChildFragmentManager(), "QuizSettingTag");
+            }
+        });
+
+        // 객관식
+        multiplechoiceConstraintLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                QuizSettingBottomSheet bottomSheet = new QuizSettingBottomSheet();
+                Bundle args = new Bundle();
+                args.putString("quizType", "MULTIPLE_CHOICE");
                 bottomSheet.setArguments(args);
                 bottomSheet.show(getChildFragmentManager(), "QuizSettingTag");
             }
