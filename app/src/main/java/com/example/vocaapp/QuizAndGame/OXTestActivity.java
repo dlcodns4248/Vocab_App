@@ -78,20 +78,18 @@ public class OXTestActivity extends AppCompatActivity {
             }
         });
 
-        // X 버튼 클릭 리스너 (모르는 단어)
+        // X 버튼 클릭 리스너
         failImageView.setOnClickListener(v -> {
             currentPage ++;
             moveToNextWord();
-
         });
 
-        // O 버튼 클릭 리스너 (아는 단어)
+        // O 버튼 클릭 리스너
         passImageView.setOnClickListener(v -> {
             correctCount++;
             currentPage ++;
             moveToNextWord();
         });
-
     }
 
     private void displayWord() {
