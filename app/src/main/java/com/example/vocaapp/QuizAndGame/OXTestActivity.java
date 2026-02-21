@@ -31,20 +31,30 @@ public class OXTestActivity extends AppCompatActivity {
     private int correctCount = 0;
     private String vocabularyId;
     private String userId;
+    // 현재 페이지 수를 표시하기 위한 변수
+    private int currentPage = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // [주의] 만약 XML 이름을 바꾸셨다면 R.layout.activity_ox_test 로 수정하세요.
         setContentView(R.layout.activity_ox_test);
 
         // 1. 인텐트로 넘어온 단어장 ID 받기
         vocabularyId = getIntent().getStringExtra("vocabularyId");
 
-        // xml 뷰 연결
+        // 뷰 연결
         vocabularyTextView = findViewById(R.id.vocabularyTextView);
         failImageView = findViewById(R.id.failImageView);
         passImageView = findViewById(R.id.passImageView);
+        ImageView cancelImageView = findViewById(R.id.cancelImageView);
+        TextView currentPageTextView = findViewById(R.id.currentPageTextView);
+        TextView totalPageTextView = findViewById(R.id.totalPageTextView);
+
+        cancelImageView.setOnClickListener(v -> finish());
+
+        QuizAndGameFirestore quizAndGameFirestore = new QuizAndGameFirestore();
+
+        currentPageTextView.setText(currentPage);
 
         // 현재 로그인한 사용자의 id 가져오기
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -52,7 +62,14 @@ public class OXTestActivity extends AppCompatActivity {
             userId = user.getUid();
         }
 
-        QuizAndGameFirestore quizAndGameFirestore = new QuizAndGameFirestore();
+        quizAndGameFirestore.getWordCount(userId, vocabularyId, new QuizAndGameFirestore.OnWordCountCallback() {
+            @Override
+            public void onCallback(long wordCount) {
+                totalPageTextView.setText(String.valueOf(wordCount));
+            }
+        });
+
+
         quizAndGameFirestore.loadWordsFromFirestore(userId, vocabularyId, wordList, new QuizAndGameFirestore.loadWordsFromFirestoreCallback(){
             @Override
             public void onCallback(List<Map<String, Object>> wordList) {
@@ -65,12 +82,18 @@ public class OXTestActivity extends AppCompatActivity {
             }
         });
 
-        // 4. X 버튼 클릭 리스너 (모르는 단어)
-        failImageView.setOnClickListener(v -> moveToNextWord());
+        // X 버튼 클릭 리스너 (모르는 단어)
+        failImageView.setOnClickListener(v -> {
+            currentPage ++;
+            moveToNextWord();
 
-        // 5. O 버튼 클릭 리스너 (아는 단어)
+        });
+
+
+        // O 버튼 클릭 리스너 (아는 단어)
         passImageView.setOnClickListener(v -> {
-            correctCount++; // 맞은 개수 증가
+            correctCount++;
+            currentPage ++;
             moveToNextWord();
         });
     }

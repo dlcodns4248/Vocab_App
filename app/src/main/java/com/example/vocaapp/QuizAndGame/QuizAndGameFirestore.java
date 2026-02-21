@@ -69,7 +69,7 @@ public class QuizAndGameFirestore {
                         if (document.exists()) {
                             long wordCount = document.getLong("wordCount") != null ? document.getLong("wordCount") : 0;
 
-                            // 🔥 중요: 데이터를 콜백으로 넘겨줌
+                            //데이터를 콜백으로 넘겨줌
                             callback.onCallback(wordCount);
                         }
                     }
@@ -84,7 +84,7 @@ public class QuizAndGameFirestore {
         FirebaseFirestore.getInstance()
                 .collection("users").document(userId)
                 .collection("vocabularies").document(vocabularyId)
-                .collection("words") // 하위 컬렉션으로 접근
+                .collection("words")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
