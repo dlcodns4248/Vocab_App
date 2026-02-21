@@ -137,7 +137,7 @@ public class MultipleChoiceActivity extends AppCompatActivity {
                 parentLayout.getBackground().setTint(Color.WHITE);
                 currentIndex++;
                 showNextQuiz();
-            }, 500);
+            }, 300);
         };
 
         firstTextView.setOnClickListener(listener);
