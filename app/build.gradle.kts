@@ -69,4 +69,7 @@ dependencies {
 
     // Guava (ListenableFuture 처리를 위해 필요)
     implementation("com.google.guava:guava:31.1-android")
+
+    // FCM 라이브러리 추가
+    implementation("com.google.firebase:firebase-messaging:23.4.1")
 }
