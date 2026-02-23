@@ -1,5 +1,6 @@
 package com.example.vocaapp.VocabularyBookList;
 
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -69,5 +70,46 @@ public class VocabularyBookFirestore {
         // [수정] 여기도 List<Map<String, Object>>로 변경하여 숫자 데이터를 허용합니다.
         void onUpdate(List<Map<String, Object>> dataList);
         void onFailure(Exception e);
+    }
+
+    // 단어장 정보를 수정(업데이트)하는 로직
+    public static void updateVocabularyBook(String uid, String vocabId, Map<String, Object> updates, VocabularyBookCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users")
+                .document(uid)
+                .collection("vocabularies")
+                .document(vocabId) // 특정 단어장 ID로 접근
+                .update(updates)   // 보낸 데이터만 수정
+                .addOnSuccessListener(aVoid -> {
+                    if (callback != null) callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) callback.onFailure(e);
+                });
+    }
+
+
+    //진행상황 초기화 메서드
+    public static void resetStudyStatus(String uid, String vocabId, VocabularyBookCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> updates = new HashMap<>();
+
+        // 기본 상태 초기화
+        updates.put("isStudying", false);
+        updates.put("stampCount", 0);
+        updates.put("nextReviewDate", FieldValue.delete());
+        updates.put("lastStudiedAt", FieldValue.delete());
+
+        db.collection("users").document(uid)
+                .collection("vocabularies").document(vocabId)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    if (callback != null) callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) callback.onFailure(e);
+                });
     }
 }

@@ -38,6 +38,7 @@ import java.util.Map;
 public class VocabularyActivity extends AppCompatActivity {
 
     private String vocabularyId;
+    private boolean isStudying = false; //학습 상 태 저장용 변수 추가
     VocabularyListAdapter adapter;
 
     List<String> words = new ArrayList<>();
@@ -50,19 +51,13 @@ public class VocabularyActivity extends AppCompatActivity {
 
     private FloatingActionButton fab, fabOption1, fabOption2;
     private boolean isFabOpen = false;
-
     private TextView fabOption1Label, fabOption2Label;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vocabulary_detail);
 
-        // 뒤로가기 처리
-        ImageView backImageView = findViewById(R.id.backImageView);
-        backImageView.setOnClickListener(v -> {
-            finish();
-        });
-
+        isStudying = getIntent().getBooleanExtra("isStudying", false);
         vocabularyId = getIntent().getStringExtra("vocabularyId");
 
         // FAB 초기화
@@ -72,14 +67,41 @@ public class VocabularyActivity extends AppCompatActivity {
         fabOption1Label = findViewById(R.id.fab_option1_label);
         fabOption2Label = findViewById(R.id.fab_option2_label);
 
+        // 뒤로가기 처리
+        ImageView backImageView = findViewById(R.id.backImageView);
+        backImageView.setOnClickListener(v -> {
+            finish();
+        });
+
+
+        if (isStudying) {
+            // 1.  배경색 변경 (setSupportBackgroundTintList 또는 setBackgroundTintList 사용)
+            // 회색(LTGRAY)으로 배경색을 직접 바꿉니다.
+            fab.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.LTGRAY));
+
+            // 2. 아이콘 색상 변경 (선택사항: 아이콘도 어둡게 만들고 싶을 때)
+            fab.setColorFilter(android.graphics.Color.DKGRAY);
+
+            // 3. 투명도 조절
+            fab.setAlpha(0.5f);
+            fabOption1.setAlpha(0.5f);
+            fabOption2.setAlpha(0.5f);
+        }
+
         // 메인 FAB 클릭 리스너
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isFabOpen) {
-                    closeFabMenu();
+                if (isStudying) {
+                    // 학습 모드일 땐 메뉴를 열지 않고 바로 안내 메시지
+                    Toast.makeText(VocabularyActivity.this, "학습 모드 중에는 단어를 추가할 수 없습니다.", Toast.LENGTH_SHORT).show();
                 } else {
-                    openFabMenu();
+                    // 학습 모드가 아닐 때만 기존처럼 메뉴를 열거나 닫음
+                    if (isFabOpen) {
+                        closeFabMenu();
+                    } else {
+                        openFabMenu();
+                    }
                 }
             }
         });
@@ -88,10 +110,13 @@ public class VocabularyActivity extends AppCompatActivity {
         fabOption1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(VocabularyActivity.this, CameraActivity.class);
-                intent.putExtra("vocabularyId", vocabularyId);
-                startActivity(intent);
-
+                if (isStudying) {
+                    Toast.makeText(VocabularyActivity.this,"학습 모드 중에는 단어를 추가할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(VocabularyActivity.this, CameraActivity.class);
+                    intent.putExtra("vocabularyId", vocabularyId);
+                    startActivity(intent);
+                }
                 closeFabMenu();
             }
         });
@@ -100,7 +125,11 @@ public class VocabularyActivity extends AppCompatActivity {
         fabOption2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showWordRegisterBottomSheet();
+                if (isStudying) {
+                    Toast.makeText(VocabularyActivity.this, "학습 모드 중에는 단어를 추가할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    showWordRegisterBottomSheet();
+                }
                 closeFabMenu();
             }
         });

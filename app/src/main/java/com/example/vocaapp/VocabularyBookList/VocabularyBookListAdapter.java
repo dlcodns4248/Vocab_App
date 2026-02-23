@@ -1,11 +1,13 @@
 package com.example.vocaapp.VocabularyBookList;
 
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.graphics.Color;
 import android.widget.ImageView;
+
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,9 +32,13 @@ public class VocabularyBookListAdapter extends RecyclerView.Adapter<VocabularyBo
         TextView textViewItem;
         ImageView[] stamps = new ImageView[6];
 
+        androidx.appcompat.widget.SwitchCompat studyModeSwitch; //스위치 변수 추가
+
         public VocabularyListViewHolder(View itemView) {
             super(itemView);
             textViewItem = itemView.findViewById(R.id.textView);
+
+            studyModeSwitch = itemView.findViewById(R.id.studyModeSwitch);
             stamps[0] = itemView.findViewById(R.id.stamp1);
             stamps[1] = itemView.findViewById(R.id.stamp2);
             stamps[2] = itemView.findViewById(R.id.stamp3);
@@ -55,7 +61,7 @@ public class VocabularyBookListAdapter extends RecyclerView.Adapter<VocabularyBo
         Map<String, Object> vocab = dataList.get(position);
         holder.textViewItem.setText(String.valueOf(vocab.get("title")));
 
-        // [수정] 스탬프 개수를 안전하게 가져오는 로직
+        // 스탬프 개수를 안전하게 가져오는 로직
         int stampCount = 0;
         Object countObj = vocab.get("stampCount");
 
@@ -68,7 +74,7 @@ public class VocabularyBookListAdapter extends RecyclerView.Adapter<VocabularyBo
             }
         }
 
-        // [수정] 스탬프 개수만큼 빨간색 필터 적용
+        // 스탬프 개수만큼 빨간색 필터 적용
         for (int i = 0; i < 6; i++) {
             if (i < stampCount) {
                 // 획득 시: 빨간색 (원하는 색상 코드로 변경 가능)
@@ -78,8 +84,33 @@ public class VocabularyBookListAdapter extends RecyclerView.Adapter<VocabularyBo
                 holder.stamps[i].setColorFilter(Color.LTGRAY);
             }
         }
+        // 1. 스위치 상태 초기화 (현재 데이터에 저장된 대로)
+        boolean isStudying = false;
+        if (vocab.get("isStudying") != null) {
+            isStudying = (boolean) vocab.get("isStudying");
+        }
 
-        holder.itemView.setOnClickListener(v -> fragment.onItemClick(position));
+        // 리스너가 중복 호출되지 않도록 일단 null로 초기화 후 상태 설정
+        holder.studyModeSwitch.setOnCheckedChangeListener(null);
+        holder.studyModeSwitch.setChecked(isStudying);
+
+        // 2. 스위치 클릭 이벤트 (작성하신 setOnClickListener 그대로 사용)
+        holder.studyModeSwitch.setOnClickListener(v -> {
+            boolean isChecked = holder.studyModeSwitch.isChecked();
+
+            if (isChecked) {
+                // 스위치를 켰을 때: 학습 모드 시작
+                fragment.startStudyMode(holder.getBindingAdapterPosition());
+            } else {
+                // 스위치를 껐을 때:
+                // 팝업에서 '취소'를 누를 수도 있으므로
+                // 일단 화면상으로는 스위치를 다시 켜두고 팝업을 띄움
+                holder.studyModeSwitch.setChecked(true);
+                fragment.showResetWarningDialog(holder.getBindingAdapterPosition());
+            }
+        });
+
+        holder.itemView.setOnClickListener(v -> fragment.onItemClick(holder.getBindingAdapterPosition()));
     }
 
     @Override
