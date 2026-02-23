@@ -55,32 +55,26 @@ public class TestResultActivity extends AppCompatActivity {
         tvProgress.setText(String.valueOf(progress));
 
         // 4. 합격 조건(80점) 체크
+        // 4. 합격 조건(80점) 체크
         if (progress >= 80) {
             resultTextView.setText("오~~ 잘했어요! 합격이에요!");
 
             if (userId != null && vocabularyId != null) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                // DB 업데이트는 QuizAndGameFirestore
+                QuizAndGameFirestore.handleTestPass(userId, vocabularyId, new QuizAndGameFirestore.QuizResultCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("Firestore", "스탬프 획득 성공!");
+                        Toast.makeText(TestResultActivity.this, "✅ 스탬프가 찍혔습니다!", Toast.LENGTH_SHORT).show();
+                        // ❌ StudyManager.getInstance().studyVocabulary(...) 호출을 여기서 삭제했습니다!
+                    }
 
-                // 스탬프 및 마지막 테스트 시간 데이터 준비
-                Map<String, Object> data = new HashMap<>();
-                data.put("stampCount", FieldValue.increment(1));
-                data.put("lastTestTime", FieldValue.serverTimestamp());
-
-                // 서버에 단어장 데이터 업데이트
-                db.collection("users").document(userId)
-                        .collection("vocabularies").document(vocabularyId)
-                        .set(data, SetOptions.merge())
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d("Firestore", "스탬프 1개 획득 성공!");
-                            Toast.makeText(TestResultActivity.this, "✅ 스탬프가 찍혔습니다!", Toast.LENGTH_SHORT).show();
-
-                            // 5. 스탬프 성공 시, 단어별 망각곡선 로직 실행
-                            StudyManager.getInstance().studyVocabulary(TestResultActivity.this, userId, vocabularyId);
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("DB_ERROR", "스탬프 업데이트 실패 원인: ", e);
-                            Toast.makeText(TestResultActivity.this, "❌ 실패: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        });
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e("DB_ERROR", "업데이트 실패", e);
+                        Toast.makeText(TestResultActivity.this, "❌ 스탬프 기록 실패", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         } else {
             resultTextView.setText("흑흑.. 아쉽게도 불합격이에요..");

@@ -138,4 +138,28 @@ public class QuizAndGameFirestore {
     public interface loadWordsFromFirestoreCallback {
         void onCallback(List<Map<String, Object>> wordList);
     }
+    //  테스트 합격 시 실행되는 핵심 로직
+    public interface QuizResultCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public static void handleTestPass(String uid, String vocabId, QuizResultCallback callback) {
+        com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore.getInstance();
+
+        Map<String, Object> updates = new HashMap<>();
+        // 1. 딱 필요한 데이터만 업데이트 (나머지 stage, studyCount 등은 생성하지 않음)
+        updates.put("stampCount", com.google.firebase.firestore.FieldValue.increment(1)); // 스탬프 1개 증가
+        updates.put("lastStudiedAt", com.google.firebase.firestore.FieldValue.serverTimestamp()); // 최근 공부 시간
+
+        db.collection("users").document(uid)
+                .collection("vocabularies").document(vocabId)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    if (callback != null) callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) callback.onFailure(e);
+                });
+    }
 }
