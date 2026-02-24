@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.vocaapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class OXTestActivity extends AppCompatActivity {
 
     private TextView vocabularyTextView;
-    private ImageView failImageView, passImageView;
+    private ConstraintLayout failImageView, passImageView;
 
     private List<Map<String, Object>> wordList = new ArrayList<>();
     private int currentIndex = 0;

@@ -62,7 +62,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:background="@drawable/rounded_background" >
+        android:background="@drawable/background_round" >
 
         <TextView
             android:id="@+id/wordTextView"
@@ -90,7 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/rounded_background"
+            android:background="@drawable/background_round"
             android:hint="단어의 철자를 입력하세요."
             android:singleLine="true" />
 

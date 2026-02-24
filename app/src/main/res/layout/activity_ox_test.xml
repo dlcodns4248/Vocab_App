@@ -70,7 +70,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_background">
+            android:background="@drawable/background_round">
 
             <TextView
                 android:id="@+id/vocabularyTextView"
@@ -98,7 +98,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/rounded_background">
+                android:background="@drawable/background_round_ripple">
 
                 <TextView
                     android:id="@+id/textView4"
@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:text="몰라요"
                     android:textColor="@color/md_theme_error"
-                    android:textSize="18dp"
+                    android:textSize="20dp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -120,15 +120,15 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/rounded_background">
+                android:background="@drawable/background_round_ripple">
 
                 <TextView
                     android:id="@+id/textView5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="알아요"
-                    android:textColor="@color/md_theme_primary"
-                    android:textSize="18dp"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
