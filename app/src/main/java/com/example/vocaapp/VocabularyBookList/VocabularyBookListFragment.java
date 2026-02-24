@@ -128,6 +128,7 @@ public class VocabularyBookListFragment extends Fragment {
 
         startActivity(intent);
     }
+
     // 학습 모드를 끌 때 띄울 경고창
     public void showResetWarningDialog(int position) {
         Map<String, Object> selectedVocabulary = dataList.get(position);

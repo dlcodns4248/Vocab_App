@@ -32,6 +32,7 @@ public class StudyManager {
         }
         return instance;
     }
+
     public void updateFCMToken(String userId) {
         com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
@@ -57,6 +58,7 @@ public class StudyManager {
      * @param userId 현재 사용자 UID
      * @param vocabId 단어장 ID
      */
+
     // StudyManager.java 내의 메서드 수정
     public void studyVocabulary(Context context, String userId, String vocabId) {
         // 단어(words)가 아니라 단어장(vocabularies) 문서 자체를 가리킵니다.
@@ -95,10 +97,11 @@ public class StudyManager {
             }
         });
     }
+
     // 단계별 대기 시간 로직 (분 단위)
     private int getWaitMinutes(int stage) {
         switch (stage) {
-            case 1: return 10;      // 10분 뒤
+            case 1: return 1;      // 10분 뒤
             case 2: return 60;      // 1시간 뒤
             case 3: return 1440;    // 1일 뒤 (60 * 24)
             case 4: return 10080;   // 7일 뒤 (1440 * 7)
