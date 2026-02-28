@@ -62,6 +62,13 @@ public class SelectVocabularyBookBottomSheet extends BottomSheetDialogFragment {
                 String title = String.valueOf(selectedData.get("title"));
                 String id = String.valueOf(selectedData.get("id"));
 
+                boolean isStudying;
+                if (selectedData.get("isStudying") != null) {
+                    isStudying = (boolean) selectedData.get("isStudying");
+                } else {
+                    isStudying = false;
+                }
+
                 QuizAndGameFirestore quizAndGameFirestore = new QuizAndGameFirestore();
                 quizAndGameFirestore.getWordCount(uid, id, new QuizAndGameFirestore.OnWordCountCallback() {
                         @Override
@@ -77,6 +84,8 @@ public class SelectVocabularyBookBottomSheet extends BottomSheetDialogFragment {
                                     Bundle result = new Bundle();
                                     result.putString("selectedTitle", title);
                                     result.putString("selectedId", id);
+
+                                    result.putBoolean("isStudying", isStudying);
 
                                     // requestKey는 부모와 맞춘 약속된 키입니다.
                                     getParentFragmentManager().setFragmentResult("requestKey", result);

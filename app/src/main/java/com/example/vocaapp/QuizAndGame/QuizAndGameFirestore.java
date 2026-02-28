@@ -38,11 +38,17 @@ public class QuizAndGameFirestore {
                             String title = doc.getString("title");
                             Long vocabularyCounts = doc.getLong("wordCount");
 
+                            Boolean isStudying = doc.getBoolean("isStudying");
+                            if (isStudying == null) {
+                                isStudying = false; // DB에 값이 아예 없으면 기본값 false
+                            }
+
                             if (title != null) {
                                 Map<String, Object> vocabData = new HashMap<>();
                                 vocabData.put("id", doc.getId());
                                 vocabData.put("title", title);
                                 vocabData.put("wordCount", vocabularyCounts);
+                                vocabData.put("isStudying", isStudying);
                                 dataList.add(vocabData);
                             }
                         }
