@@ -34,6 +34,8 @@ public class OXTestActivity extends AppCompatActivity {
     private String userId;
     int currentPage = 1;
 
+    private boolean isOfficial = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +43,7 @@ public class OXTestActivity extends AppCompatActivity {
 
         // 인텐트로 전달받은 vocabularyId 가져오기
         vocabularyId = getIntent().getStringExtra("vocabularyId");
+        isOfficial = getIntent().getBooleanExtra("isOfficial", false);
 
         // 뷰 연결
         vocabularyTextView = findViewById(R.id.vocabularyTextView);
@@ -124,6 +127,8 @@ public class OXTestActivity extends AppCompatActivity {
         intent.putExtra("fail", fail);
         intent.putExtra("userId", userId);
         intent.putExtra("vocabularyId", vocabularyId);
+
+        intent.putExtra("isOfficial", isOfficial);
 
         startActivity(intent);
         finish();

@@ -29,6 +29,10 @@ public class MultipleChoiceActivity extends AppCompatActivity {
     TextView firstTextView, secondTextView, thirdTextView, forthTextView, wordTextView;
     TextView currentPageTextView, totalPageTextView;
 
+    boolean isOfficial = false;
+    String userId;
+    String vocabularyId;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiple_choice);
@@ -48,6 +52,7 @@ public class MultipleChoiceActivity extends AppCompatActivity {
         String userId = user.getUid();
         Intent intent = getIntent();
         String vocabularyId = intent.getStringExtra("vocabularyId");
+        isOfficial = intent.getBooleanExtra("isOfficial", false);
 
         QuizAndGameFirestore quizAndGameFirestore = new QuizAndGameFirestore();
 
@@ -76,6 +81,10 @@ public class MultipleChoiceActivity extends AppCompatActivity {
             // 결과 데이터 전달 (정답 수, 오답 수, 총 문제 수 등)
             resultIntent.putExtra("pass", pass);
             resultIntent.putExtra("fail", fail);
+
+            resultIntent.putExtra("userId", userId);
+            resultIntent.putExtra("vocabularyId", vocabularyId);
+            resultIntent.putExtra("isOfficial", isOfficial);
 
             startActivity(resultIntent);
             finish();

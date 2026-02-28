@@ -36,6 +36,8 @@ public class TestResultActivity extends AppCompatActivity {
         userId = intent.getStringExtra("userId");
         vocabularyId = intent.getStringExtra("vocabularyId");
 
+        boolean isOfficial = intent.getBooleanExtra("isOfficial", false);
+
         // 2. XML 뷰 연결
         TextView passTextView = findViewById(R.id.passTextView);
         TextView failTextView = findViewById(R.id.failTextView);
@@ -57,24 +59,31 @@ public class TestResultActivity extends AppCompatActivity {
         // 4. 합격 조건(80점) 체크
         // 4. 합격 조건(80점) 체크
         if (progress >= 80) {
-            resultTextView.setText("오~~ 잘했어요! 합격이에요!");
 
-            if (userId != null && vocabularyId != null) {
-                // DB 업데이트는 QuizAndGameFirestore
-                QuizAndGameFirestore.handleTestPass(userId, vocabularyId, new QuizAndGameFirestore.QuizResultCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d("Firestore", "스탬프 획득 성공!");
-                        Toast.makeText(TestResultActivity.this, "✅ 스탬프가 찍혔습니다!", Toast.LENGTH_SHORT).show();
-                        // ❌ StudyManager.getInstance().studyVocabulary(...) 호출을 여기서 삭제했습니다!
-                    }
+            // ★★★ [수정] 여기서 공식 모드인지 확인하고 분기 처리! ★★★
+            if (isOfficial) {
+                // 공식 모드 합격 -> 스탬프 지급 O
+                resultTextView.setText("오~~ 잘했어요! 합격이에요!");
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        Log.e("DB_ERROR", "업데이트 실패", e);
-                        Toast.makeText(TestResultActivity.this, "❌ 스탬프 기록 실패", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                if (userId != null && vocabularyId != null) {
+                    QuizAndGameFirestore.handleTestPass(userId, vocabularyId, new QuizAndGameFirestore.QuizResultCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d("Firestore", "스탬프 획득 성공!");
+                            Toast.makeText(TestResultActivity.this, "✅ 스탬프가 찍혔습니다!", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.e("DB_ERROR", "업데이트 실패", e);
+                            Toast.makeText(TestResultActivity.this, "❌ 스탬프 기록 실패", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            } else {
+                // 자율 복습 모드 합격 -> 스탬프 지급 X
+                resultTextView.setText("오~~ 잘했어요!\n(자율 복습이라 기록은 안 돼요!)");
+                Toast.makeText(TestResultActivity.this, "✍️ 자율학습 완료! 스탬프는 적립되지 않습니다.", Toast.LENGTH_SHORT).show();
             }
         } else {
             resultTextView.setText("흑흑.. 아쉽게도 불합격이에요..");

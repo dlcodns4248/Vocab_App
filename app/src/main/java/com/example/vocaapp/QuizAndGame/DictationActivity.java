@@ -54,6 +54,8 @@ public class DictationActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String vocabularyId = intent.getStringExtra("vocabularyId");
 
+        boolean isOfficial = intent.getBooleanExtra("isOfficial", false);
+
         // Firestore 메서드 실행
         QuizAndGameFirestore quizAndGameFirestore = new QuizAndGameFirestore();
         // 메서드 호출 시 세 번째 인자로 콜백 구현
@@ -125,6 +127,8 @@ public class DictationActivity extends AppCompatActivity {
 
                     testResultIntent.putExtra("vocabularyId", vocabularyId);
                     testResultIntent.putExtra("userId", user.getUid());         //127,128 유저 id 단어장 id 넘기기
+
+                    testResultIntent.putExtra("isOfficial", isOfficial);
 
                     startActivity(testResultIntent);
                     finish();
