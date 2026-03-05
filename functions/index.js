@@ -7,12 +7,15 @@ admin.initializeApp();
 // 배포 지역을 서울(asia-northeast3)로 설정 (선택 사항이나 권장)
 setGlobalOptions({region: "asia-northeast3"});
 
-exports.sendReviewNotification = onSchedule("every 10 minutes", async (event) => {
+exports.sendReviewNotification = onSchedule("every 5 minutes", async (event) => {
   const now = admin.firestore.Timestamp.now();
+
+  const bufferTime = 60 * 1000;
+  const nowPlusBuffer = admin.firestore.Timestamp.fromMillis(Date.now() + bufferTime);
 
   // 1. 복습 대상자 조회
   const snapshot = await admin.firestore().collectionGroup("vocabularies")
-    .where("nextReviewDate", "<=", now)
+    .where("nextReviewDate", "<=", nowPlusBuffer)
     .where("isStudying", "==", true)
     .get();
 
@@ -40,7 +43,9 @@ exports.sendReviewNotification = onSchedule("every 10 minutes", async (event) =>
       try {
         await admin.messaging().send(message);
         // 중복 방지를 위해 상태 변경
-        await doc.ref.update({isStudying: false});
+        await doc.ref.update({
+                  nextReviewDate: admin.firestore.FieldValue.delete()
+                });
         console.log(`알림 발송 성공: ${doc.id}`);
       } catch (error) {
         console.error("FCM 발송 에러:", error);
