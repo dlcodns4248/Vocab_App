@@ -57,12 +57,13 @@ public class TestResultActivity extends AppCompatActivity {
         tvProgress.setText(String.valueOf(progress));
 
         // 4. 합격 조건(80점) 체크
-        // 4. 합격 조건(80점) 체크
         if (progress >= 80) {
 
-            // ★★★ [수정] 여기서 공식 모드인지 확인하고 분기 처리! ★★★
+
+            StudyManager.getInstance().studyVocabulary(TestResultActivity.this, userId, vocabularyId);
+
             if (isOfficial) {
-                // 공식 모드 합격 -> 스탬프 지급 O
+
                 resultTextView.setText("오~~ 잘했어요! 합격이에요!");
 
                 if (userId != null && vocabularyId != null) {
@@ -81,7 +82,7 @@ public class TestResultActivity extends AppCompatActivity {
                     });
                 }
             } else {
-                // 자율 복습 모드 합격 -> 스탬프 지급 X
+
                 resultTextView.setText("오~~ 잘했어요!\n(자율 복습이라 기록은 안 돼요!)");
                 Toast.makeText(TestResultActivity.this, "✍️ 자율학습 완료! 스탬프는 적립되지 않습니다.", Toast.LENGTH_SHORT).show();
             }

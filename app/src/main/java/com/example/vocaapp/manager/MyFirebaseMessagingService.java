@@ -11,12 +11,21 @@ import com.google.firebase.messaging.RemoteMessage;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        if (remoteMessage.getNotification() != null) {
-            showNotification(
-                    remoteMessage.getNotification().getTitle(),
-                    remoteMessage.getNotification().getBody()
-            );
+        String title = "복습 알림";
+        String message = "단어를 복습할 시간입니다.";
+
+
+        if (remoteMessage.getData().size() > 0) {
+            title = remoteMessage.getData().get("title");
+            message = remoteMessage.getData().get("message");
         }
+
+        else if (remoteMessage.getNotification() != null) {
+            title = remoteMessage.getNotification().getTitle();
+            message = remoteMessage.getNotification().getBody();
+        }
+
+        showNotification(title, message);
     }
 
     private void showNotification(String title, String message) {
@@ -34,6 +43,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.ic_launcher_foreground) // 아이콘 확인 필요
                 .setAutoCancel(true);
 
-        manager.notify(0, builder.build());
+        manager.notify((int) System.currentTimeMillis(), builder.build());
     }
 }

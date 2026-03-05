@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
@@ -44,20 +45,16 @@ public class StudyManager {
                     // 새로운 토큰 가져오기
                     String token = task.getResult();
 
+                    Map<String, Object> tokenData = new HashMap<>();
+                    tokenData.put("fcmToken", token);
+
                     // Firestore의 사용자 문서에 토큰 저장
                     db.collection("users").document(userId)
-                            .update("fcmToken", token)
-                            .addOnSuccessListener(aVoid -> Log.d("FCM", "토큰 업데이트 성공"))
-                            .addOnFailureListener(e -> Log.e("FCM", "토큰 업데이트 실패", e));
+                            .set(tokenData, com.google.firebase.firestore.SetOptions.merge())
+                            .addOnSuccessListener(aVoid -> Log.d("FCM", "토큰 저장 성공!"))
+                            .addOnFailureListener(e -> Log.e("FCM", "토큰 저장 실패: " + e.getMessage()));
                 });
     }
-
-    /**
-     * 단어 공부 완료 처리 함수 (에빙하우스 망각곡선 적용)
-     * @param context Toast 출력을 위한 컨텍스트
-     * @param userId 현재 사용자 UID
-     * @param vocabId 단어장 ID
-     */
 
     // StudyManager.java 내의 메서드 수정
     public void studyVocabulary(Context context, String userId, String vocabId) {
@@ -68,11 +65,10 @@ public class StudyManager {
         vocabRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 // A. 현재 단계 확인
-                Long currentStageLong = documentSnapshot.getLong("stage");
-                int currentStage = (currentStageLong != null) ? currentStageLong.intValue() : 0;
+                Long currentStampLong = documentSnapshot.getLong("stampCount");
+                int currentStamp = (currentStampLong != null) ? currentStampLong.intValue() : 0;
 
-                int nextStage = currentStage + 1;
-                int waitMinutes = getWaitMinutes(nextStage);
+                int waitMinutes = getWaitMinutes(currentStamp);
 
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.MINUTE, waitMinutes);
@@ -80,7 +76,6 @@ public class StudyManager {
 
                 // B. 업데이트 데이터 준비 (단어장에 직접 저장)
                 Map<String, Object> updates = new HashMap<>();
-                updates.put("stage", nextStage);
                 updates.put("nextReviewDate", new Timestamp(nextReviewDate));
                 updates.put("isStudying", true);
                 updates.put("lastStudiedAt", new Timestamp(new Date()));
@@ -89,11 +84,10 @@ public class StudyManager {
                 vocabRef.update(updates)
                         .addOnSuccessListener(aVoid -> {
                             String timeInfo = formatWaitTime(waitMinutes);
-                            String msg = "단어장 " + nextStage + "단계 상승! (" + timeInfo + " 후 복습)";
+                            String msg = currentStamp + "단계 복습 완료! (" + timeInfo + " 후 알림)";
                             Log.d("StudyManager", msg);
                             if (context != null) Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> Log.e("StudyManager", "업데이트 실패", e));
+                        });
             }
         });
     }
@@ -101,7 +95,8 @@ public class StudyManager {
     // 단계별 대기 시간 로직 (분 단위)
     private int getWaitMinutes(int stage) {
         switch (stage) {
-            case 1: return 1;      // 10분 뒤
+            case 0:
+            case 1: return 10;      // 10분 뒤
             case 2: return 60;      // 1시간 뒤
             case 3: return 1440;    // 1일 뒤 (60 * 24)
             case 4: return 10080;   // 7일 뒤 (1440 * 7)
@@ -114,5 +109,19 @@ public class StudyManager {
         if (minutes < 60) return minutes + "분";
         if (minutes < 1440) return (minutes / 60) + "시간";
         return (minutes / 1440) + "일";
+    }
+
+    public void stopStudying(String userId, String vocabId) {
+        DocumentReference vocabRef = db.collection("users").document(userId)
+                .collection("vocabularies").document(vocabId);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("isStudying", false);
+        updates.put("stampCount", 0);
+        updates.put("nextReviewDate", FieldValue.delete()); // 날짜 필드 삭제
+
+        vocabRef.update(updates)
+                .addOnSuccessListener(aVoid -> Log.d("StudyManager", "학습 초기화 성공"))
+                .addOnFailureListener(e -> Log.e("StudyManager", "학습 초기화 실패", e));
     }
 }
